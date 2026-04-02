@@ -1,104 +1,435 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>NPS Ranking</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NPS Ranking Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0d0d0d; font-family: 'DM Sans', 'Segoe UI', sans-serif; color: #e8e8e8; }
+    select option { background: #111; }
 
-<style>
-body {
-  background: #0d0d0d;
-  color: #fff;
-  font-family: sans-serif;
-  padding: 20px;
-}
-button { margin: 5px; padding: 8px; }
-</style>
+    #app {
+      min-height: 100vh;
+      background: #0d0d0d;
+      max-width: 400px;
+      margin: 0 auto;
+      padding-bottom: 24px;
+    }
+
+    /* Toast */
+    #toast {
+      display: none;
+      position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+      border: 1px solid; border-radius: 10px; padding: 8px 18px;
+      font-size: 13px; color: #e8e8e8; z-index: 1000;
+      white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+    }
+
+    /* Saving overlay */
+    #saving-overlay {
+      display: none;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+      z-index: 2000; align-items: center; justify-content: center;
+    }
+    #saving-overlay.active { display: flex; }
+    .saving-box {
+      background: #111; border: 1px solid #2a2a2a; border-radius: 12px;
+      padding: 16px 28px; font-size: 15px; font-weight: 600;
+    }
+
+    /* Tabs */
+    .tabs { display: flex; background: #111; border-bottom: 1px solid #1e1e1e; position: sticky; top: 0; z-index: 50; }
+    .tab-btn {
+      flex: 1; padding: 14px 0; background: none; border: none; color: #555;
+      font-size: 12px; cursor: pointer; font-family: inherit;
+      border-bottom: 2px solid transparent; transition: all 0.2s;
+    }
+    .tab-btn.active { color: #4ade80; border-bottom: 2px solid #4ade80; }
+
+    /* Content */
+    .content { padding: 12px 14px; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Filtro de Mês */
+    .month-filter-container {
+      background: #111; border: 1px solid #1e1e1e; border-radius: 10px;
+      padding: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;
+    }
+    .month-select {
+      flex: 1; background: #0d0d0d; border: 1px solid #333; color: #e8e8e8;
+      padding: 8px; border-radius: 6px; font-family: inherit; outline: none;
+    }
+
+    /* Ranking Card */
+    .rank-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .rank-title { font-size: 15px; font-weight: 700; }
+    .rank-date { font-size: 11px; color: #555; }
+    .export-btn {
+      background: #1a2e1a; border: 1px solid #2a5a2a;
+      border-radius: 7px; color: #4ade80; font-size: 12px; font-weight: 700;
+      padding: 6px 12px; cursor: pointer;
+    }
+
+    .ranking-card { background: #0d0d0d; border-radius: 10px; border: 1px solid #1e1e1e; overflow: hidden; }
+    .img-head { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 10px 12px; border-bottom: 1px solid #1e1e1e; }
+    .img-head-title { font-size: 13px; font-weight: 700; color: #4ade80; }
+    
+    .rank-row {
+      display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+      background: #0d0d0d; border-bottom: 1px solid #141414; border-left: 3px solid transparent;
+    }
+    .rank-row.medal-0 { border-left-color: #FFD700; background: rgba(255, 215, 0, 0.03); }
+    .rank-row.medal-1 { border-left-color: #C0C0C0; }
+    .rank-row.medal-2 { border-left-color: #CD7F32; }
+
+    .pos { font-size: 13px; font-weight: 700; min-width: 24px; color: #555; }
+    .op-name { font-size: 13px; font-weight: 500; }
+    .badge { font-size: 9px; background: #1a3a2a; color: #4ade80; border-radius: 4px; padding: 1px 5px; margin-left: 5px; }
+    
+    .bar-track { height: 4px; background: #1a1a1a; border-radius: 2px; margin-top: 4px; width: 100%; }
+    .bar-fill { height: 100%; border-radius: 2px; transition: width 0.8s ease-out; }
+
+    .pts-num { font-size: 15px; font-weight: 700; }
+    .pts-lbl { font-size: 10px; color: #555; }
+
+    /* Form */
+    .card { background: #111; border-radius: 12px; padding: 16px; border: 1px solid #1e1e1e; }
+    .group { margin-bottom: 16px; }
+    .lbl { display: block; font-size: 11px; color: #555; margin-bottom: 6px; text-transform: uppercase; }
+    .op-select, .date-input {
+      width: 100%; background: #0d0d0d; border: 1px solid #2a2a2a; border-radius: 7px;
+      color: #e8e8e8; padding: 10px; font-size: 14px; font-family: inherit;
+    }
+    .score-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+    .score-btn {
+      background: none; border: 1px solid #333; border-radius: 7px; color: #666;
+      padding: 10px 0; cursor: pointer; font-weight: 700;
+    }
+    .score-btn.selected { color: #111; }
+    .score-btn.promoter.selected { background: #4ade80; border-color: #4ade80; }
+    .score-btn.neutral-score.selected { background: #facc15; border-color: #facc15; }
+    .score-btn.detractor.selected { background: #f87171; border-color: #f87171; }
+    
+    .submit-btn {
+      width: 100%; background: #4ade80; color: #111; border: none;
+      border-radius: 9px; padding: 14px; font-weight: 700; cursor: pointer;
+    }
+
+    /* Histórico */
+    .hist-row {
+      display: flex; justify-content: space-between; padding: 10px;
+      background: #111; border-radius: 8px; margin-bottom: 6px; border: 1px solid #1a1a1a;
+    }
+    .hist-date { font-size: 10px; color: #555; }
+    .clear-btn { background: none; border: 1px solid #3a1a1a; color: #f87171; padding: 5px 10px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+    
+    @keyframes pulseRow {
+      0% { background: #0d0d0d; }
+      50% { background: #1a3a2a; }
+      100% { background: #0d0d0d; }
+    }
+    .pulse-row { animation: pulseRow 1.2s ease; }
+  </style>
 </head>
-
 <body>
 
-<h2 id="month"></h2>
+<div id="app">
+  <div id="toast"></div>
+  <div id="saving-overlay"><div class="saving-box">⏳ Gerando imagem...</div></div>
 
-<button onclick="changeMonth(-1)">◀</button>
-<button onclick="changeMonth(1)">▶</button>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('ranking')">🏆 Ranking</button>
+    <button class="tab-btn" onclick="switchTab('lancar')">➕ Lançar</button>
+    <button class="tab-btn" onclick="switchTab('historico')">📋 Histórico</button>
+  </div>
 
-<h3 id="count"></h3>
+  <div class="content">
+    
+    <div id="tab-ranking" class="tab-panel active">
+      <div class="month-filter-container">
+        <label class="lbl" style="margin:0">Mês Ref:</label>
+        <select id="filter-month-rank" class="month-select" onchange="changeMonthView(this.value)"></select>
+      </div>
 
-<div id="ranking"></div>
+      <div class="rank-header">
+        <div>
+          <div class="rank-title">NPS Ranking</div>
+          <div class="rank-date" id="rank-date-display"></div>
+        </div>
+        <button class="export-btn" onclick="captureAndShare()">⬆️ Exportar</button>
+      </div>
 
-<br>
+      <div class="ranking-card" id="ranking-card">
+        <div class="img-head">
+          <span class="img-head-title">📊 PERFORMANCE NPS</span>
+          <span class="img-head-date" id="img-head-date"></span>
+        </div>
+        <div id="ranking-rows"></div>
+        <div style="font-size:9px; color:#333; text-align:center; padding:5px;">Gerado via NPS System</div>
+      </div>
+    </div>
 
-<input id="name" placeholder="Nome" />
-<input id="score" type="number" placeholder="Nota 0-10" />
-<button onclick="add()">Adicionar</button>
+    <div id="tab-lancar" class="tab-panel">
+      <div class="card">
+        <div class="group">
+          <label class="lbl">Operador</label>
+          <select class="op-select" id="op-select"></select>
+        </div>
+
+        <div class="group">
+          <label class="lbl">Data do Atendimento</label>
+          <input type="date" id="input-date" class="date-input">
+        </div>
+
+        <div class="group">
+          <label class="lbl">Nota NPS (0–10)</label>
+          <div class="score-grid" id="score-grid"></div>
+        </div>
+
+        <button class="submit-btn" onclick="handleSubmit()">Confirmar Lançamento 📤</button>
+      </div>
+    </div>
+
+    <div id="tab-historico" class="tab-panel">
+      <div class="month-filter-container">
+        <select id="filter-month-hist" class="month-select" onchange="changeMonthView(this.value)"></select>
+        <button class="clear-btn" onclick="clearLaunches()">Zerar Mês</button>
+      </div>
+      <div id="hist-rows"></div>
+    </div>
+
+  </div>
+</div>
 
 <script>
-const STORAGE_KEY = "nps_launches_v2";
-let launches = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  const STORAGE_KEY = "nps_data_v3";
+  const OPERATORS = [
+    { name: "Liz", base: 42 }, { name: "Natália", base: 21 },
+    { name: "Carolina", base: 15 }, { name: "Alef", base: 15 },
+    { name: "Davi", base: 14 }, { name: "Daniele", base: 13 },
+    { name: "Michele", base: 13 }, { name: "Sunamita", base: 12 },
+    { name: "Blenda", base: 11 }, { name: "Fernanda", base: 9 },
+    { name: "Lucas", base: 8 }, { name: "Eduarda", base: 6 },
+    { name: "Kaio", base: 3 }, { name: "Patrícia", base: 1 }
+  ];
 
-let currentDate = new Date();
+  let launches = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  let selectedScore = null;
+  let currentViewMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
 
-function formatMonth(date) {
-  return date.toLocaleDateString("pt-BR", {
-    month: "long",
-    year: "numeric"
-  });
-}
+  // --- Inicialização ---
+  function init() {
+    renderMonthSelectors();
+    renderOpSelect();
+    renderScoreGrid();
+    resetFormDate();
+    updateAll();
+  }
 
-function changeMonth(dir) {
-  currentDate.setMonth(currentDate.getMonth() + dir);
-  render();
-}
+  function renderMonthSelectors() {
+    const selectors = ['filter-month-rank', 'filter-month-hist'];
+    const now = new Date();
+    let options = "";
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const val = d.toISOString().slice(0, 7);
+      const label = d.toLocaleDateString("pt-BR", { month: 'long', year: 'numeric' });
+      options += `<option value="${val}">${label}</option>`;
+    }
+    selectors.forEach(id => {
+      const el = document.getElementById(id);
+      el.innerHTML = options;
+      el.value = currentViewMonth;
+    });
+  }
 
-function getLaunchesByMonth() {
-  return launches.filter(l => {
-    const d = new Date(l.date);
-    return d.getMonth() === currentDate.getMonth() &&
-           d.getFullYear() === currentDate.getFullYear();
-  });
-}
+  function renderOpSelect() {
+    const sel = document.getElementById("op-select");
+    sel.innerHTML = '<option value="">Selecione o operador...</option>' + 
+      OPERATORS.map(op => `<option value="${op.name}">${op.name}</option>`).join('');
+  }
 
-function add() {
-  const name = document.getElementById("name").value;
-  const score = Number(document.getElementById("score").value);
+  function renderScoreGrid() {
+    const grid = document.getElementById("score-grid");
+    grid.innerHTML = Array.from({length: 11}, (_, i) => {
+      const type = i >= 9 ? 'promoter' : i >= 7 ? 'neutral-score' : 'detractor';
+      return `<button class="score-btn ${type}" onclick="setScore(${i}, this)">${i}</button>`;
+    }).join('');
+  }
 
-  if (!name || isNaN(score)) return alert("Preencha tudo");
+  // --- Lógica de Dados ---
+  function setScore(num, btn) {
+    selectedScore = num;
+    document.querySelectorAll('.score-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
 
-  launches.push({
-    id: Date.now(),
-    name,
-    score,
-    scored: score >= 8,
-    date: new Date(currentDate).toISOString()
-  });
+  function changeMonthView(val) {
+    currentViewMonth = val;
+    document.getElementById('filter-month-rank').value = val;
+    document.getElementById('filter-month-hist').value = val;
+    updateAll();
+  }
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(launches));
+  function updateAll() {
+    renderRanking();
+    renderHistorico();
+  }
 
-  render();
-}
+  function renderRanking() {
+    const monthData = launches.filter(l => l.date.startsWith(currentViewMonth));
+    const ptsMap = {};
+    monthData.forEach(l => { if(l.scored) ptsMap[l.name] = (ptsMap[l.name] || 0) + 1; });
 
-function buildRanking() {
-  const pts = {};
-  getLaunchesByMonth().forEach(l => {
-    if (l.scored) pts[l.name] = (pts[l.name] || 0) + 1;
-  });
-  return pts;
-}
+    const ranking = OPERATORS.map(op => ({
+      ...op,
+      currentPts: ptsMap[op.name] || 0,
+      total: op.base + (ptsMap[op.name] || 0)
+    })).sort((a, b) => b.total - a.total);
 
-function render() {
-  document.getElementById("month").textContent = formatMonth(currentDate);
+    const maxPts = Math.max(...ranking.map(r => r.total), 1);
+    const container = document.getElementById("ranking-rows");
+    
+    document.getElementById("rank-date-display").textContent = `${monthData.length} avaliações no período`;
+    document.getElementById("img-head-date").textContent = currentViewMonth;
 
-  const data = getLaunchesByMonth();
-  document.getElementById("count").textContent =
-    data.length + " lançamentos";
+    container.innerHTML = ranking.map((op, i) => {
+      const isMedal = i < 3;
+      const pct = (op.total / maxPts) * 100;
+      const color = i === 0 ? "#FFD700" : i === 1 ? "#C0C0C0" : i === 2 ? "#CD7F32" : "#4ade80";
+      
+      return `
+        <div class="rank-row ${isMedal ? 'medal-'+i : ''}" id="row-${op.name}">
+          <span class="pos">${isMedal ? ['🥇','🥈','🥉'][i] : (i+1)+'º'}</span>
+          <div style="flex:1">
+            <div style="display:flex; justify-content:space-between; align-items:center">
+              <span class="op-name">${op.name} ${op.currentPts > 0 ? `<span class="badge">+${op.currentPts}</span>` : ''}</span>
+              <span class="pts-num">${op.total}<span class="pts-lbl">pts</span></span>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width:${pct}%; background:${color}"></div></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
 
-  document.getElementById("ranking").innerHTML =
-    "<pre>" + JSON.stringify(buildRanking(), null, 2) + "</pre>";
-}
+  function renderHistorico() {
+    const container = document.getElementById("hist-rows");
+    const monthData = launches.filter(l => l.date.startsWith(currentViewMonth));
+    
+    if(monthData.length === 0) {
+      container.innerHTML = '<div style="text-align:center; color:#444; padding:20px;">Sem registros neste mês.</div>';
+      return;
+    }
 
-render();
+    container.innerHTML = monthData.map(l => `
+      <div class="hist-row">
+        <div>
+          <div style="font-size:13px; font-weight:600">${l.name}</div>
+          <div class="hist-date">${l.date.split('-').reverse().join('/')}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="color:${l.scored ? '#4ade80':'#f87171'}; font-weight:700">Nota ${l.score}</div>
+          <div style="font-size:10px">${l.scored ? 'PONTUOU' : 'NEUTRO/RUIM'}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function handleSubmit() {
+    const name = document.getElementById("op-select").value;
+    const date = document.getElementById("input-date").value;
+    if(!name || !date || selectedScore === null) return alert("Preencha todos os campos!");
+
+    const entry = {
+      name,
+      date,
+      score: selectedScore,
+      scored: selectedScore >= 9, // Regra: 9 e 10 pontuam
+      timestamp: Date.now()
+    };
+
+    launches.unshift(entry);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(launches));
+    
+    showFeedback(entry.scored ? "success" : "neutral", entry.scored ? "+1 Ponto!" : "Lançado (Sem ponto)");
+    
+    // Reset e Navegação
+    selectedScore = null;
+    document.querySelectorAll('.score-btn').forEach(b => b.classList.remove('selected'));
+    currentViewMonth = date.slice(0, 7);
+    renderMonthSelectors();
+    updateAll();
+    switchTab('ranking');
+    
+    // Efeito Visual
+    setTimeout(() => {
+      const row = document.getElementById(`row-${name}`);
+      if(row) row.classList.add('pulse-row');
+    }, 300);
+  }
+
+  // --- Auxiliares ---
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    const btnIdx = tab === 'ranking' ? 0 : tab === 'lancar' ? 1 : 2;
+    document.querySelectorAll('.tab-btn')[btnIdx].classList.add('active');
+  }
+
+  function resetFormDate() {
+    document.getElementById("input-date").value = new Date().toISOString().slice(0, 10);
+  }
+
+  function showFeedback(type, msg) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.style.display = "block";
+    t.style.background = type === "success" ? "#1a3a2a" : "#222";
+    setTimeout(() => t.style.display = "none", 3000);
+  }
+
+  function clearLaunches() {
+    if(confirm("Deseja apagar todos os registros deste mês visualizado?")) {
+      launches = launches.filter(l => !l.date.startsWith(currentViewMonth));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(launches));
+      updateAll();
+    }
+  }
+
+  async function captureAndShare() {
+    const overlay = document.getElementById("saving-overlay");
+    overlay.classList.add("active");
+    
+    try {
+      const canvas = await html2canvas(document.getElementById("ranking-card"), {
+        backgroundColor: "#0d0d0d",
+        scale: 2
+      });
+      const blob = await new Promise(res => canvas.toBlob(res, "image/png"));
+      const file = new File([blob], `nps-${currentViewMonth}.png`, { type: "image/png" });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: "NPS Ranking" });
+      } else {
+        const link = document.createElement('a');
+        link.download = `nps-${currentViewMonth}.png`;
+        link.href = URL.createObjectURL(blob);
+        link.click();
+      }
+    } catch (e) {
+      alert("Erro ao exportar");
+    } finally {
+      overlay.classList.remove("active");
+    }
+  }
+
+  init();
 </script>
-
 </body>
 </html>
