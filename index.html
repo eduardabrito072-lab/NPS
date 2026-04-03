@@ -3,50 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NPS Ranking</title>
+  <title>NPS Ranking Oficial</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #0d0d0d; font-family: 'DM Sans', sans-serif; color: #e8e8e8; }
-    #app { max-width: 400px; margin: 0 auto; padding-bottom: 24px; }
+    #app { max-width: 400px; margin: 0 auto; min-height: 100vh; padding-bottom: 30px; }
+    
     .tabs { display: flex; background: #111; border-bottom: 1px solid #1e1e1e; position: sticky; top: 0; z-index: 100; }
-    .tab-btn { flex: 1; padding: 14px 0; background: none; border: none; color: #555; font-size: 12px; cursor: pointer; border-bottom: 2px solid transparent; }
+    .tab-btn { flex: 1; padding: 15px 0; background: none; border: none; color: #555; font-size: 11px; cursor: pointer; text-transform: uppercase; font-weight: 700; }
     .tab-btn.active { color: #4ade80; border-bottom: 2px solid #4ade80; }
-    .content { padding: 12px 14px; }
+
+    .content { padding: 15px; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
-    /* Estilo igual à sua foto */
-    .month-filter-container { background: #111; border: 1px solid #1e1e1e; border-radius: 10px; padding: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-    .month-select { flex: 1; background: #0d0d0d; border: 1px solid #333; color: #e8e8e8; padding: 8px; border-radius: 6px; font-family: inherit; }
-    .rank-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .rank-title { font-size: 15px; font-weight: 700; }
-    .export-btn { background: #1a2e1a; border: 1px solid #2a5a2a; border-radius: 7px; color: #4ade80; font-size: 12px; font-weight: 700; padding: 6px 12px; cursor: pointer; }
-    .ranking-card { background: #0d0d0d; border-radius: 10px; border: 1px solid #1e1e1e; overflow: hidden; }
-    .img-head { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 10px 12px; border-bottom: 1px solid #1e1e1e; }
-    .img-head-title { font-size: 13px; font-weight: 700; color: #4ade80; }
-    .rank-row { display: flex; align-items: center; gap: 8px; padding: 10px; background: #0d0d0d; border-bottom: 1px solid #141414; border-left: 3px solid transparent; }
-    .pos { font-size: 13px; font-weight: 700; min-width: 24px; color: #555; }
-    .bar-track { height: 4px; background: #1a1a1a; border-radius: 2px; margin-top: 4px; width: 100%; }
-    .bar-fill { height: 100%; border-radius: 2px; background: #4ade80; }
-    .pts-num { font-size: 15px; font-weight: 700; }
-    .pts-lbl { font-size: 10px; color: #555; }
-
-    /* Formulários */
-    .card { background: #111; border-radius: 12px; padding: 16px; border: 1px solid #1e1e1e; margin-bottom: 10px; }
-    .lbl { display: block; font-size: 11px; color: #555; margin-bottom: 6px; text-transform: uppercase; }
-    .input-field { width: 100%; background: #0d0d0d; border: 1px solid #2a2a2a; border-radius: 7px; color: #fff; padding: 10px; margin-bottom: 15px; font-family: inherit; }
-    .submit-btn { width: 100%; background: #4ade80; color: #111; border: none; border-radius: 9px; padding: 14px; font-weight: 700; cursor: pointer; }
+    .card { background: #111; border-radius: 12px; padding: 16px; border: 1px solid #1e1e1e; margin-bottom: 15px; }
+    .lbl { display: block; font-size: 10px; color: #555; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+    .input-field { width: 100%; background: #0d0d0d; border: 1px solid #2a2a2a; border-radius: 8px; color: #fff; padding: 12px; margin-bottom: 15px; font-family: inherit; }
+    .btn-primary { width: 100%; background: #4ade80; color: #000; border: none; border-radius: 8px; padding: 12px; font-weight: 700; cursor: pointer; }
     
-    /* Config list */
-    .op-item { display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #0d0d0d; border-radius: 6px; margin-bottom: 5px; border: 1px solid #222; }
-    .btn-del { background: none; border: 1px solid #3a1a1a; color: #f87171; padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer; }
+    .ranking-card { background: #0d0d0d; border: 1px solid #1e1e1e; border-radius: 10px; overflow: hidden; }
+    .rank-row { display: flex; align-items: center; gap: 10px; padding: 12px; border-bottom: 1px solid #161616; border-left: 4px solid transparent; }
+    
+    /* Cores das Medalhas */
+    .rank-row.medal-0 { border-left-color: #FFD700; background: rgba(255, 215, 0, 0.05); } /* Ouro */
+    .rank-row.medal-1 { border-left-color: #C0C0C0; background: rgba(192, 192, 192, 0.05); } /* Prata */
+    .rank-row.medal-2 { border-left-color: #CD7F32; background: rgba(205, 127, 50, 0.05); } /* Bronze */
+
+    .pos { width: 25px; font-weight: 700; color: #555; font-size: 14px; }
+    .pos.medal-0 { color: #FFD700; }
+    .pos.medal-1 { color: #C0C0C0; }
+    .pos.medal-2 { color: #CD7F32; }
+
+    .bar-container { flex: 1; }
+    .op-info { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; }
+    .bar-bg { height: 6px; background: #1a1a1a; border-radius: 3px; overflow: hidden; }
+    .bar-fill { height: 100%; background: #4ade80; transition: width 1s ease; }
+    .rank-row.medal-0 .bar-fill { background: #FFD700; }
+    .rank-row.medal-1 .bar-fill { background: #C0C0C0; }
+    .rank-row.medal-2 .bar-fill { background: #CD7F32; }
+    
+    .op-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #0d0d0d; border: 1px solid #222; border-radius: 6px; margin-bottom: 5px; }
+    .btn-del { background: #3a1a1a; color: #f87171; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; }
+
+    #toast { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #4ade80; color: #000; padding: 10px 20px; border-radius: 20px; font-weight: 700; z-index: 1000; }
   </style>
 </head>
 <body>
 
 <div id="app">
+  <div id="toast"></div>
+
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('ranking')">🏆 Ranking</button>
     <button class="tab-btn" onclick="switchTab('lancar')">➕ Lançar</button>
@@ -55,138 +64,170 @@
 
   <div class="content">
     <div id="tab-ranking" class="tab-panel active">
-      <div class="month-filter-container">
-        <label class="lbl" style="margin:0">Mês Ref:</label>
-        <select id="filter-month" class="month-select" onchange="renderRanking()"></select>
+      <div class="card" style="padding:10px; margin-bottom:15px;">
+        <label class="lbl">Visualizar Mês</label>
+        <select id="rank-month" class="input-field" style="margin-bottom:0" onchange="renderRanking()"></select>
       </div>
-      <div class="rank-header">
-        <div>
-          <div class="rank-title">NPS Ranking</div>
-          <div style="font-size:11px; color:#555" id="total-evals"></div>
+      
+      <div class="ranking-card" id="capture-area">
+        <div style="padding: 15px; background: #111; border-bottom: 1px solid #1e1e1e; display: flex; justify-content: space-between; align-items:center;">
+          <span style="font-weight: 700; color: #4ade80; font-size:14px;">📊 PERFORMANCE NPS</span>
+          <span id="display-month" style="font-size: 11px; color: #555; text-transform: uppercase;"></span>
         </div>
-        <button class="export-btn" onclick="capture()">⬆️ Exportar</button>
+        <div id="ranking-list"></div>
       </div>
-      <div class="ranking-card" id="ranking-card">
-        <div class="img-head">
-          <span class="img-head-title">📊 PERFORMANCE NPS</span>
-          <span id="display-month-img" style="font-size:12px; color:#555"></span>
-        </div>
-        <div id="ranking-rows"></div>
-      </div>
+      <button class="btn-primary" style="margin-top:15px; background:#1a2e1a; color:#4ade80;" onclick="exportImage()">Compartilhar Ranking 📸</button>
     </div>
 
     <div id="tab-lancar" class="tab-panel">
       <div class="card">
         <label class="lbl">Operador</label>
-        <select id="op-select" class="input-field"></select>
-        <label class="lbl">Data</label>
+        <select id="select-op" class="input-field"></select>
+        <label class="lbl">Data do Atendimento</label>
         <input type="date" id="input-date" class="input-field">
-        <label class="lbl">Nota (0 a 10)</label>
-        <input type="number" id="input-score" class="input-field" min="0" max="10">
-        <button class="submit-btn" onclick="addLaunch()">Confirmar Lançamento</button>
+        <label class="lbl">Nota NPS (0 a 10)</label>
+        <select id="select-score" class="input-field">
+          <option value="">Selecione a nota...</option>
+          <script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}</option>`);</script>
+        </select>
+        <button class="btn-primary" onclick="addLaunch()">Salvar e Atualizar ✅</button>
       </div>
     </div>
 
     <div id="tab-config" class="tab-panel">
       <div class="card">
-        <div class="rank-title" style="margin-bottom:10px">Gerenciar Equipe</div>
-        <input type="text" id="new-op-name" class="input-field" placeholder="Nome do Operador">
-        <input type="number" id="new-op-base" class="input-field" placeholder="Pontos Iniciais (Base)">
-        <button class="submit-btn" onclick="addOperator()">Adicionar Operador</button>
+        <label class="lbl">Novo Operador</label>
+        <input type="text" id="new-op-name" class="input-field" placeholder="Nome do operador">
+        <label class="lbl">Pontos Base (Opcional)</label>
+        <input type="number" id="new-op-base" class="input-field" value="0">
+        <button class="btn-primary" onclick="addOperator()">Adicionar à Lista +</button>
       </div>
-      <label class="lbl">Lista de Operadores</label>
-      <div id="ops-list"></div>
+      <label class="lbl">Lista de Operadores (Clique para excluir)</label>
+      <div id="manage-ops-list"></div>
     </div>
   </div>
 </div>
 
 <script>
-  let operators = JSON.parse(localStorage.getItem('nps_ops_v5')) || [
+  const K_OPS = "nps_ops_v5";
+  const K_DATA = "nps_data_v5";
+
+  // Lista Original Restaurada
+  const INITIAL_OPS = [
     { name: "Liz", base: 42 }, { name: "Natália", base: 21 }, { name: "Carolina", base: 15 },
-    { name: "Alef", base: 15 }, { name: "Davi", base: 14 }, { name: "Daniele", base: 13 }
+    { name: "Alef", base: 15 }, { name: "Davi", base: 14 }, { name: "Daniele", base: 13 },
+    { name: "Michele", base: 13 }, { name: "Sunamita", base: 12 }, { name: "Blenda", base: 11 },
+    { name: "Fernanda", base: 9 }, { name: "Lucas", base: 8 }, { name: "Eduarda", base: 6 },
+    { name: "Kaio", base: 3 }, { name: "Patrícia", base: 1 }
   ];
-  let launches = JSON.parse(localStorage.getItem('nps_data_v5')) || [];
+
+  let operators = JSON.parse(localStorage.getItem(K_OPS)) || INITIAL_OPS;
+  let launches = JSON.parse(localStorage.getItem(K_DATA)) || [];
+
+  function save() {
+    localStorage.setItem(K_OPS, JSON.stringify(operators));
+    localStorage.setItem(K_DATA, JSON.stringify(launches));
+  }
 
   function init() {
-    const monthSel = document.getElementById('filter-month');
+    const sel = document.getElementById('rank-month');
     const now = new Date();
     for (let i = 0; i < 12; i++) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const val = d.toISOString().slice(0, 7);
-      const label = d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-      monthSel.innerHTML += `<option value="${val}">${label}</option>`;
+      const txt = d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+      sel.innerHTML += `<option value="${val}">${txt}</option>`;
     }
     document.getElementById('input-date').value = now.toISOString().slice(0, 10);
     renderAll();
   }
 
   function renderAll() {
-    localStorage.setItem('nps_ops_v5', JSON.stringify(operators));
-    localStorage.setItem('nps_data_v5', JSON.stringify(launches));
+    renderOpSelectors();
     renderRanking();
-    renderConfig();
-    document.getElementById('op-select').innerHTML = operators.map(o => `<option value="${o.name}">${o.name}</option>`).join('');
+    renderConfigOps();
   }
 
   function renderRanking() {
-    const m = document.getElementById('filter-month').value;
-    document.getElementById('display-month-img').innerText = m;
-    const monthData = launches.filter(l => l.date.startsWith(m));
-    document.getElementById('total-evals').innerText = `${monthData.length} avaliações no período`;
-
-    const scores = {};
-    monthData.forEach(l => { if(l.score >= 9) scores[l.name] = (scores[l.name] || 0) + 1; });
+    const month = document.getElementById('rank-month').value;
+    document.getElementById('display-month').innerText = month;
+    const monthLaunches = launches.filter(l => l.date.startsWith(month));
+    const scoreMap = {};
+    monthLaunches.forEach(l => { if(l.score >= 8) scoreMap[l.name] = (scoreMap[l.name] || 0) + 1; });
 
     const rank = operators.map(op => ({
       name: op.name,
-      total: parseInt(op.base) + (scores[op.name] || 0),
-      monthPts: (scores[op.name] || 0)
-    })).sort((a,b) => b.total - a.total);
+      total: parseInt(op.base) + (scoreMap[op.name] || 0),
+      new: (scoreMap[op.name] || 0)
+    })).sort((a, b) => b.total - a.total);
 
-    const max = Math.max(...rank.map(r => r.total), 1);
-    document.getElementById('ranking-rows').innerHTML = rank.map((op, i) => `
-      <div class="rank-row">
-        <span class="pos">${i+1}º</span>
-        <div style="flex:1">
-          <div style="display:flex; justify-content:space-between; align-items:baseline">
-            <span style="font-size:13px">${op.name} ${op.monthPts > 0 ? `<small style="color:#4ade80; margin-left:4px">+${op.monthPts}</small>` : ''}</span>
-            <span class="pts-num">${op.total}<span class="pts-lbl">pts</span></span>
+    const list = document.getElementById('ranking-list');
+    list.innerHTML = "";
+    const max = rank[0]?.total || 1;
+
+    rank.forEach((op, i) => {
+      const pct = (op.total / max) * 100;
+      const medalClass = i < 3 ? `medal-${i}` : '';
+      const medalEmoji = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1) + 'º';
+      
+      list.innerHTML += `
+        <div class="rank-row ${medalClass}">
+          <div class="pos ${medalClass}">${medalEmoji}</div>
+          <div class="bar-container">
+            <div class="op-info">
+              <span style="font-weight:500">${op.name} ${op.new > 0 ? `<small style="color:#4ade80; font-weight:bold;">+${op.new}</small>` : ''}</span>
+              <span style="font-weight:700">${op.total} <small style="font-size:9px; color:#555">PTS</small></span>
+            </div>
+            <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
           </div>
-          <div class="bar-track"><div class="bar-fill" style="width:${(op.total/max)*100}%"></div></div>
         </div>
-      </div>
-    `).join('');
+      `;
+    });
+  }
+
+  function renderOpSelectors() {
+    const sel = document.getElementById('select-op');
+    const sortedOps = [...operators].sort((a, b) => a.name.localeCompare(b.name));
+    sel.innerHTML = sortedOps.map(op => `<option value="${op.name}">${op.name}</option>`).join('');
   }
 
   function addLaunch() {
-    const name = document.getElementById('op-select').value;
+    const name = document.getElementById('select-op').value;
     const date = document.getElementById('input-date').value;
-    const score = document.getElementById('input-score').value;
-    if(!score) return;
-    launches.unshift({ name, date, score: parseInt(score) });
-    renderAll();
+    const score = document.getElementById('select-score').value;
+    if(!score) return alert("Selecione uma nota");
+    launches.push({ name, date, score: parseInt(score) });
+    save();
+    showToast("Lançamento concluído!");
+    renderRanking();
     switchTab('ranking');
   }
 
   function addOperator() {
     const name = document.getElementById('new-op-name').value;
-    const base = document.getElementById('new-op-base').value || 0;
-    if(!name) return;
-    operators.push({ name, base: parseInt(base) });
+    const base = document.getElementById('new-op-base').value;
+    if(!name) return alert("Digite o nome");
+    operators.push({ name, base: parseInt(base || 0) });
+    save();
     document.getElementById('new-op-name').value = "";
-    document.getElementById('new-op-base').value = "";
     renderAll();
+    showToast("Operador adicionado!");
   }
 
-  function deleteOp(i) {
-    if(confirm("Remover operador?")) { operators.splice(i, 1); renderAll(); }
+  function deleteOp(index) {
+    if(confirm("Deseja remover este operador da lista?")) {
+      operators.splice(index, 1);
+      save();
+      renderAll();
+    }
   }
 
-  function renderConfig() {
-    document.getElementById('ops-list').innerHTML = operators.map((o, i) => `
+  function renderConfigOps() {
+    const list = document.getElementById('manage-ops-list');
+    list.innerHTML = operators.map((op, i) => `
       <div class="op-item">
-        <span>${o.name} (Base: ${o.base})</span>
-        <button class="btn-del" onclick="deleteOp(${i})">Excluir</button>
+        <span style="font-size:13px">${op.name} <small style="color:#555">(Base: ${op.base})</small></span>
+        <button class="btn-del" onclick="deleteOp(${i})">Remover</button>
       </div>
     `).join('');
   }
@@ -194,18 +235,27 @@
   function switchTab(t) {
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-'+t).classList.add('active');
-    event.currentTarget?.classList.add('active');
+    document.getElementById('tab-' + t).classList.add('active');
+    const btnIdx = t === 'ranking' ? 0 : t === 'lancar' ? 1 : 2;
+    document.querySelectorAll('.tab-btn')[btnIdx].classList.add('active');
+    if(t === 'ranking') renderRanking();
   }
 
-  async function capture() {
-    const canvas = await html2canvas(document.getElementById('ranking-card'), { backgroundColor: "#0d0d0d", scale: 2 });
-    const a = document.createElement('a');
-    a.href = canvas.toDataURL(); a.download = 'nps.png'; a.click();
+  function showToast(m) {
+    const t = document.getElementById('toast');
+    t.innerText = m; t.style.display = "block";
+    setTimeout(() => t.style.display = "none", 2500);
+  }
+
+  async function exportImage() {
+    const canvas = await html2canvas(document.getElementById('capture-area'), { backgroundColor: "#0d0d0d", scale: 2 });
+    const link = document.createElement('a');
+    link.download = `ranking-nps-${document.getElementById('rank-month').value}.png`;
+    link.href = canvas.toDataURL();
+    link.click();
   }
 
   init();
 </script>
 </body>
 </html>
-  
