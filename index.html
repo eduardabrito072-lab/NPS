@@ -27,10 +27,9 @@
     .ranking-card { background: #0d0d0d; border: 1px solid #1e1e1e; border-radius: 10px; overflow: hidden; }
     .rank-row { display: flex; align-items: center; gap: 10px; padding: 12px; border-bottom: 1px solid #161616; border-left: 4px solid transparent; }
     
-    /* Cores das Medalhas */
-    .rank-row.medal-0 { border-left-color: #FFD700; background: rgba(255, 215, 0, 0.05); } /* Ouro */
-    .rank-row.medal-1 { border-left-color: #C0C0C0; background: rgba(192, 192, 192, 0.05); } /* Prata */
-    .rank-row.medal-2 { border-left-color: #CD7F32; background: rgba(205, 127, 50, 0.05); } /* Bronze */
+    .rank-row.medal-0 { border-left-color: #FFD700; background: rgba(255, 215, 0, 0.05); }
+    .rank-row.medal-1 { border-left-color: #C0C0C0; background: rgba(192, 192, 192, 0.05); }
+    .rank-row.medal-2 { border-left-color: #CD7F32; background: rgba(205, 127, 50, 0.05); }
 
     .pos { width: 25px; font-weight: 700; color: #555; font-size: 14px; }
     .pos.medal-0 { color: #FFD700; }
@@ -98,8 +97,6 @@
       <div class="card">
         <label class="lbl">Novo Operador</label>
         <input type="text" id="new-op-name" class="input-field" placeholder="Nome do operador">
-        <label class="lbl">Pontos Base (Opcional)</label>
-        <input type="number" id="new-op-base" class="input-field" value="0">
         <button class="btn-primary" onclick="addOperator()">Adicionar à Lista +</button>
       </div>
       <label class="lbl">Lista de Operadores (Clique para excluir)</label>
@@ -109,17 +106,22 @@
 </div>
 
 <script>
-  const K_OPS = "nps_ops_v5";
-  const K_DATA = "nps_data_v5";
+  const K_OPS = "nps_ops_v6";
+  const K_DATA = "nps_data_v6";
 
-  // Lista Original Restaurada
+  // Lista de Operadores
   const INITIAL_OPS = [
-    { name: "Liz", base: 42 }, { name: "Natália", base: 21 }, { name: "Carolina", base: 15 },
-    { name: "Alef", base: 15 }, { name: "Davi", base: 14 }, { name: "Daniele", base: 13 },
-    { name: "Michele", base: 13 }, { name: "Sunamita", base: 12 }, { name: "Blenda", base: 11 },
-    { name: "Fernanda", base: 9 }, { name: "Lucas", base: 8 }, { name: "Eduarda", base: 6 },
-    { name: "Kaio", base: 3 }, { name: "Patrícia", base: 1 }
+    "Liz", "Natália", "Carolina", "Alef", "Davi", "Daniele", 
+    "Michele", "Sunamita", "Blenda", "Fernanda", "Lucas", 
+    "Eduarda", "Kaio", "Patrícia"
   ];
+
+  // Pontuações fixas de Março (Mês Passado)
+  const MARCH_POINTS = {
+    "Liz": 42, "Natália": 21, "Carolina": 15, "Alef": 15, "Davi": 14, 
+    "Daniele": 13, "Michele": 13, "Sunamita": 12, "Blenda": 11, 
+    "Fernanda": 9, "Lucas": 8, "Eduarda": 6, "Kaio": 3, "Patrícia": 1
+  };
 
   let operators = JSON.parse(localStorage.getItem(K_OPS)) || INITIAL_OPS;
   let launches = JSON.parse(localStorage.getItem(K_DATA)) || [];
@@ -138,6 +140,8 @@
       const txt = d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
       sel.innerHTML += `<option value="${val}">${txt}</option>`;
     }
+    // Define Abril como padrão se estivermos em Abril
+    sel.value = now.toISOString().slice(0, 7);
     document.getElementById('input-date').value = now.toISOString().slice(0, 10);
     renderAll();
   }
@@ -149,17 +153,29 @@
   }
 
   function renderRanking() {
-    const month = document.getElementById('rank-month').value;
-    document.getElementById('display-month').innerText = month;
-    const monthLaunches = launches.filter(l => l.date.startsWith(month));
-    const scoreMap = {};
-    monthLaunches.forEach(l => { if(l.score >= 8) scoreMap[l.name] = (scoreMap[l.name] || 0) + 1; });
+    const selectedMonth = document.getElementById('rank-month').value;
+    document.getElementById('display-month').innerText = selectedMonth;
 
-    const rank = operators.map(op => ({
-      name: op.name,
-      total: parseInt(op.base) + (scoreMap[op.name] || 0),
-      new: (scoreMap[op.name] || 0)
-    })).sort((a, b) => b.total - a.total);
+    const monthLaunches = launches.filter(l => l.date.startsWith(selectedMonth));
+    const scoreMap = {};
+    
+    // Contar novos lançamentos do mês selecionado
+    monthLaunches.forEach(l => { 
+      if(l.score >= 9) scoreMap[l.name] = (scoreMap[l.name] || 0) + 1; 
+    });
+
+    const rank = operators.map(name => {
+      // Se o mês selecionado for Março de 2026 (ou anterior), aplica os pontos base
+      // Se for Abril/2026 em diante, começa do zero + novos lançamentos
+      let base = (selectedMonth <= "2026-03") ? (MARCH_POINTS[name] || 0) : 0;
+      let newPts = (scoreMap[name] || 0);
+      
+      return {
+        name: name,
+        total: base + newPts,
+        isNew: newPts > 0
+      };
+    }).sort((a, b) => b.total - a.total);
 
     const list = document.getElementById('ranking-list');
     list.innerHTML = "";
@@ -175,7 +191,7 @@
           <div class="pos ${medalClass}">${medalEmoji}</div>
           <div class="bar-container">
             <div class="op-info">
-              <span style="font-weight:500">${op.name} ${op.new > 0 ? `<small style="color:#4ade80; font-weight:bold;">+${op.new}</small>` : ''}</span>
+              <span style="font-weight:500">${op.name}</span>
               <span style="font-weight:700">${op.total} <small style="font-size:9px; color:#555">PTS</small></span>
             </div>
             <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
@@ -187,8 +203,8 @@
 
   function renderOpSelectors() {
     const sel = document.getElementById('select-op');
-    const sortedOps = [...operators].sort((a, b) => a.name.localeCompare(b.name));
-    sel.innerHTML = sortedOps.map(op => `<option value="${op.name}">${op.name}</option>`).join('');
+    const sortedOps = [...operators].sort((a, b) => a.localeCompare(b));
+    sel.innerHTML = sortedOps.map(name => `<option value="${name}">${name}</option>`).join('');
   }
 
   function addLaunch() {
@@ -198,24 +214,23 @@
     if(!score) return alert("Selecione uma nota");
     launches.push({ name, date, score: parseInt(score) });
     save();
-    showToast("Lançamento concluído!");
+    showToast("Sucesso!");
     renderRanking();
     switchTab('ranking');
   }
 
   function addOperator() {
     const name = document.getElementById('new-op-name').value;
-    const base = document.getElementById('new-op-base').value;
     if(!name) return alert("Digite o nome");
-    operators.push({ name, base: parseInt(base || 0) });
+    operators.push(name);
     save();
     document.getElementById('new-op-name').value = "";
     renderAll();
-    showToast("Operador adicionado!");
+    showToast("Adicionado!");
   }
 
   function deleteOp(index) {
-    if(confirm("Deseja remover este operador da lista?")) {
+    if(confirm("Remover este operador?")) {
       operators.splice(index, 1);
       save();
       renderAll();
@@ -224,9 +239,9 @@
 
   function renderConfigOps() {
     const list = document.getElementById('manage-ops-list');
-    list.innerHTML = operators.map((op, i) => `
+    list.innerHTML = operators.map((name, i) => `
       <div class="op-item">
-        <span style="font-size:13px">${op.name} <small style="color:#555">(Base: ${op.base})</small></span>
+        <span style="font-size:13px">${name}</span>
         <button class="btn-del" onclick="deleteOp(${i})">Remover</button>
       </div>
     `).join('');
