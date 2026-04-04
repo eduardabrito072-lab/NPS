@@ -1,276 +1,77 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NPS Ranking Oficial</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <title>NPS System</title>
+
+  <!-- html2canvas -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #0d0d0d; font-family: 'DM Sans', sans-serif; color: #e8e8e8; }
-    #app { max-width: 400px; margin: 0 auto; min-height: 100vh; padding-bottom: 30px; }
-    
-    .tabs { display: flex; background: #111; border-bottom: 1px solid #1e1e1e; position: sticky; top: 0; z-index: 100; }
-    .tab-btn { flex: 1; padding: 15px 0; background: none; border: none; color: #555; font-size: 11px; cursor: pointer; text-transform: uppercase; font-weight: 700; }
-    .tab-btn.active { color: #4ade80; border-bottom: 2px solid #4ade80; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
 
-    .content { padding: 15px; }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
+    #area-captura {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
 
-    .card { background: #111; border-radius: 12px; padding: 16px; border: 1px solid #1e1e1e; margin-bottom: 15px; }
-    .lbl { display: block; font-size: 10px; color: #555; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
-    .input-field { width: 100%; background: #0d0d0d; border: 1px solid #2a2a2a; border-radius: 8px; color: #fff; padding: 12px; margin-bottom: 15px; font-family: inherit; }
-    .btn-primary { width: 100%; background: #4ade80; color: #000; border: none; border-radius: 8px; padding: 12px; font-weight: 700; cursor: pointer; }
-    
-    .ranking-card { background: #0d0d0d; border: 1px solid #1e1e1e; border-radius: 10px; overflow: hidden; }
-    .rank-row { display: flex; align-items: center; gap: 10px; padding: 12px; border-bottom: 1px solid #161616; border-left: 4px solid transparent; }
-    
-    .rank-row.medal-0 { border-left-color: #FFD700; background: rgba(255, 215, 0, 0.05); }
-    .rank-row.medal-1 { border-left-color: #C0C0C0; background: rgba(192, 192, 192, 0.05); }
-    .rank-row.medal-2 { border-left-color: #CD7F32; background: rgba(205, 127, 50, 0.05); }
+    #branding {
+      text-align: center;
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
 
-    .pos { width: 25px; font-weight: 700; color: #555; font-size: 14px; }
-    .pos.medal-0 { color: #FFD700; }
-    .pos.medal-1 { color: #C0C0C0; }
-    .pos.medal-2 { color: #CD7F32; }
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      border: none;
+      background: #4CAF50;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
 
-    .bar-container { flex: 1; }
-    .op-info { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; }
-    .bar-bg { height: 6px; background: #1a1a1a; border-radius: 3px; overflow: hidden; }
-    .bar-fill { height: 100%; background: #4ade80; transition: width 1s ease; }
-    .rank-row.medal-0 .bar-fill { background: #FFD700; }
-    .rank-row.medal-1 .bar-fill { background: #C0C0C0; }
-    .rank-row.medal-2 .bar-fill { background: #CD7F32; }
-    
-    .op-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #0d0d0d; border: 1px solid #222; border-radius: 6px; margin-bottom: 5px; }
-    .btn-del { background: #3a1a1a; color: #f87171; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; }
-
-    #toast { display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #4ade80; color: #000; padding: 10px 20px; border-radius: 20px; font-weight: 700; z-index: 1000; }
+    button:hover {
+      background: #45a049;
+    }
   </style>
 </head>
+
 <body>
 
-<div id="app">
-  <div id="toast"></div>
+  <div id="area-captura">
+    <div id="branding">NPS SYSTEM BY EDUARDA</div>
 
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('ranking')">🏆 Ranking</button>
-    <button class="tab-btn" onclick="switchTab('lancar')">➕ Lançar</button>
-    <button class="tab-btn" onclick="switchTab('config')">⚙️ Config</button>
+    <h2>Resultado NPS</h2>
+    <p>Promotores: 70%</p>
+    <p>Neutros: 20%</p>
+    <p>Detratores: 10%</p>
   </div>
 
-  <div class="content">
-    <div id="tab-ranking" class="tab-panel active">
-      <div class="card" style="padding:10px; margin-bottom:15px;">
-        <label class="lbl">Visualizar Mês</label>
-        <select id="rank-month" class="input-field" style="margin-bottom:0" onchange="renderRanking()"></select>
-      </div>
-      
-      <div class="ranking-card" id="capture-area">
-        <div style="padding: 15px; background: #111; border-bottom: 1px solid #1e1e1e; display: flex; justify-content: space-between; align-items:center;">
-          <span style="font-weight: 700; color: #4ade80; font-size:14px;">📊 PERFORMANCE NPS</span>
-          <span id="display-month" style="font-size: 11px; color: #555; text-transform: uppercase;"></span>
-        </div>
-        <div id="ranking-list"></div>
-      </div>
-      <button class="btn-primary" style="margin-top:15px; background:#1a2e1a; color:#4ade80;" onclick="exportImage()">Compartilhar Ranking 📸</button>
-    </div>
+  <button onclick="capturarTela()">Baixar imagem</button>
 
-    <div id="tab-lancar" class="tab-panel">
-      <div class="card">
-        <label class="lbl">Operador</label>
-        <select id="select-op" class="input-field"></select>
-        <label class="lbl">Data do Atendimento</label>
-        <input type="date" id="input-date" class="input-field">
-        <label class="lbl">Nota NPS (0 a 10)</label>
-        <select id="select-score" class="input-field">
-          <option value="">Selecione a nota...</option>
-          <script>for(let i=0; i<=10; i++) document.write(`<option value="${i}">${i}</option>`);</script>
-        </select>
-        <button class="btn-primary" onclick="addLaunch()">Salvar e Atualizar ✅</button>
-      </div>
-    </div>
+  <script>
+    function capturarTela() {
+      const elemento = document.getElementById("area-captura");
 
-    <div id="tab-config" class="tab-panel">
-      <div class="card">
-        <label class="lbl">Novo Operador</label>
-        <input type="text" id="new-op-name" class="input-field" placeholder="Nome do operador">
-        <button class="btn-primary" onclick="addOperator()">Adicionar à Lista +</button>
-      </div>
-      <label class="lbl">Lista de Operadores (Clique para excluir)</label>
-      <div id="manage-ops-list"></div>
-    </div>
-  </div>
-</div>
-
-<script>
-  const K_OPS = "nps_ops_v6";
-  const K_DATA = "nps_data_v6";
-
-  // Lista de Operadores
-  const INITIAL_OPS = [
-    "Liz", "Natália", "Carolina", "Alef", "Davi", "Daniele", 
-    "Michele", "Sunamita", "Blenda", "Fernanda", "Lucas", 
-    "Eduarda", "Kaio", "Patrícia"
-  ];
-
-  // Pontuações fixas de Março (Mês Passado)
-  const MARCH_POINTS = {
-    "Liz": 42, "Natália": 21, "Carolina": 15, "Alef": 15, "Davi": 14, 
-    "Daniele": 13, "Michele": 13, "Sunamita": 12, "Blenda": 11, 
-    "Fernanda": 9, "Lucas": 8, "Eduarda": 6, "Kaio": 3, "Patrícia": 1
-  };
-
-  let operators = JSON.parse(localStorage.getItem(K_OPS)) || INITIAL_OPS;
-  let launches = JSON.parse(localStorage.getItem(K_DATA)) || [];
-
-  function save() {
-    localStorage.setItem(K_OPS, JSON.stringify(operators));
-    localStorage.setItem(K_DATA, JSON.stringify(launches));
-  }
-
-  function init() {
-    const sel = document.getElementById('rank-month');
-    const now = new Date();
-    for (let i = 0; i < 12; i++) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const val = d.toISOString().slice(0, 7);
-      const txt = d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-      sel.innerHTML += `<option value="${val}">${txt}</option>`;
+      html2canvas(elemento).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "nps-eduarda.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      });
     }
-    // Define Abril como padrão se estivermos em Abril
-    sel.value = now.toISOString().slice(0, 7);
-    document.getElementById('input-date').value = now.toISOString().slice(0, 10);
-    renderAll();
-  }
+  </script>
 
-  function renderAll() {
-    renderOpSelectors();
-    renderRanking();
-    renderConfigOps();
-  }
-
-  function renderRanking() {
-    const selectedMonth = document.getElementById('rank-month').value;
-    document.getElementById('display-month').innerText = selectedMonth;
-
-    const monthLaunches = launches.filter(l => l.date.startsWith(selectedMonth));
-    const scoreMap = {};
-    
-    // Contar novos lançamentos do mês selecionado
-    monthLaunches.forEach(l => { 
-      if(l.score >= 9) scoreMap[l.name] = (scoreMap[l.name] || 0) + 1; 
-    });
-
-    const rank = operators.map(name => {
-      // Se o mês selecionado for Março de 2026 (ou anterior), aplica os pontos base
-      // Se for Abril/2026 em diante, começa do zero + novos lançamentos
-      let base = (selectedMonth <= "2026-03") ? (MARCH_POINTS[name] || 0) : 0;
-      let newPts = (scoreMap[name] || 0);
-      
-      return {
-        name: name,
-        total: base + newPts,
-        isNew: newPts > 0
-      };
-    }).sort((a, b) => b.total - a.total);
-
-    const list = document.getElementById('ranking-list');
-    list.innerHTML = "";
-    const max = rank[0]?.total || 1;
-
-    rank.forEach((op, i) => {
-      const pct = (op.total / max) * 100;
-      const medalClass = i < 3 ? `medal-${i}` : '';
-      const medalEmoji = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1) + 'º';
-      
-      list.innerHTML += `
-        <div class="rank-row ${medalClass}">
-          <div class="pos ${medalClass}">${medalEmoji}</div>
-          <div class="bar-container">
-            <div class="op-info">
-              <span style="font-weight:500">${op.name}</span>
-              <span style="font-weight:700">${op.total} <small style="font-size:9px; color:#555">PTS</small></span>
-            </div>
-            <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
-          </div>
-        </div>
-      `;
-    });
-  }
-
-  function renderOpSelectors() {
-    const sel = document.getElementById('select-op');
-    const sortedOps = [...operators].sort((a, b) => a.localeCompare(b));
-    sel.innerHTML = sortedOps.map(name => `<option value="${name}">${name}</option>`).join('');
-  }
-
-  function addLaunch() {
-    const name = document.getElementById('select-op').value;
-    const date = document.getElementById('input-date').value;
-    const score = document.getElementById('select-score').value;
-    if(!score) return alert("Selecione uma nota");
-    launches.push({ name, date, score: parseInt(score) });
-    save();
-    showToast("Sucesso!");
-    renderRanking();
-    switchTab('ranking');
-  }
-
-  function addOperator() {
-    const name = document.getElementById('new-op-name').value;
-    if(!name) return alert("Digite o nome");
-    operators.push(name);
-    save();
-    document.getElementById('new-op-name').value = "";
-    renderAll();
-    showToast("Adicionado!");
-  }
-
-  function deleteOp(index) {
-    if(confirm("Remover este operador?")) {
-      operators.splice(index, 1);
-      save();
-      renderAll();
-    }
-  }
-
-  function renderConfigOps() {
-    const list = document.getElementById('manage-ops-list');
-    list.innerHTML = operators.map((name, i) => `
-      <div class="op-item">
-        <span style="font-size:13px">${name}</span>
-        <button class="btn-del" onclick="deleteOp(${i})">Remover</button>
-      </div>
-    `).join('');
-  }
-
-  function switchTab(t) {
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + t).classList.add('active');
-    const btnIdx = t === 'ranking' ? 0 : t === 'lancar' ? 1 : 2;
-    document.querySelectorAll('.tab-btn')[btnIdx].classList.add('active');
-    if(t === 'ranking') renderRanking();
-  }
-
-  function showToast(m) {
-    const t = document.getElementById('toast');
-    t.innerText = m; t.style.display = "block";
-    setTimeout(() => t.style.display = "none", 2500);
-  }
-
-  async function exportImage() {
-    const canvas = await html2canvas(document.getElementById('capture-area'), { backgroundColor: "#0d0d0d", scale: 2 });
-    const link = document.createElement('a');
-    link.download = `ranking-nps-${document.getElementById('rank-month').value}.png`;
-    link.href = canvas.toDataURL();
-    link.click();
-  }
-
-  init();
-</script>
 </body>
 </html>
