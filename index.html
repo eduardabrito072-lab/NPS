@@ -178,9 +178,12 @@ border-radius: 10px; overflow: hidden; margin-bottom: 14px;
 #capture-area .op-info { margin-bottom: 3px; font-size: 12px; }
 #capture-area .bar-bg { height: 3px; }
 #capture-area .bar-fill { background: linear-gradient(90deg, #1f3a2a, var(–green)); }
-#capture-area .rank-row.medal-0 .bar-fill { background: linear-gradient(90deg, #6a5500, var(–gold)); }
-#capture-area .rank-row.medal-1 .bar-fill { background: linear-gradient(90deg, #505050, var(–silver)); }
-#capture-area .rank-row.medal-2 .bar-fill { background: linear-gradient(90deg, #5a3010, var(–bronze)); }
+#capture-area .rank-row.medal-0 .bar-fill { background: linear-gradient(90deg, #6a5500, var(–gold)) !important; }
+#capture-area .rank-row.medal-1 .bar-fill { background: linear-gradient(90deg, #505050, var(–silver)) !important; }
+#capture-area .rank-row.medal-2 .bar-fill { background: linear-gradient(90deg, #5a3010, var(–bronze)) !important; }
+.rank-row.medal-0 .bar-fill { background: linear-gradient(90deg, #6a5500, var(–gold)) !important; }
+.rank-row.medal-1 .bar-fill { background: linear-gradient(90deg, #505050, var(–silver)) !important; }
+.rank-row.medal-2 .bar-fill { background: linear-gradient(90deg, #5a3010, var(–bronze)) !important; }
 
 .capture-header {
 padding: 12px 16px; background: #111;
