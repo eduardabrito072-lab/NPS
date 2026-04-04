@@ -4,8 +4,10 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>NPS Ranking Oficial</title>
+
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -14,9 +16,13 @@
   --surface: #111;
   --border: #1e1e1e;
   --border-dim: #161616;
+
   --text: #e8e8e8;
-  --dim: #555;
-  --green: #4ade80;
+
+  /* 🔥 CORRIGIDO */
+  --dim: #8a8a8a;
+  --green: #22c55e;
+
   --gold:   #FFD700;
   --silver: #C0C0C0;
   --bronze: #CD7F32;
@@ -37,7 +43,6 @@ body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--t
   color: var(--dim); font-family: 'DM Sans', sans-serif;
   font-size: 10px; font-weight: 700; text-transform: uppercase;
   letter-spacing: 0.6px; cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
 }
 .tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
 
@@ -45,40 +50,34 @@ body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--t
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
 
-/* CARD / FORM */
+/* CARD */
 .card {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 12px; padding: 14px; margin-bottom: 14px;
 }
+
 .lbl {
-  display: block; font-size: 10px; font-weight: 700; color: var(--dim);
-  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;
+  font-size: 10px; font-weight: 700; color: var(--dim);
+  text-transform: uppercase; margin-bottom: 6px; display: block;
 }
+
 .input-field {
   width: 100%; background: #0d0d0d; border: 1px solid #2a2a2a;
   border-radius: 8px; color: #fff; padding: 11px 12px; margin-bottom: 12px;
-  font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none;
 }
-.input-field option { background: #111; }
 
 .btn-primary {
-  width: 100%; background: var(--green); color: #000; border: none;
-  border-radius: 8px; padding: 12px; font-family: 'DM Sans', sans-serif;
-  font-weight: 700; font-size: 14px; cursor: pointer;
-}
-.btn-secondary {
-  width: 100%; background: #1a2e1a; color: var(--green);
-  border: 1px solid #2a4a2a; border-radius: 8px; padding: 12px;
-  font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer;
+  width: 100%; background: var(--green); color: #000;
+  border: none; border-radius: 8px; padding: 12px; font-weight: 700;
 }
 
-/* SCORE BUTTONS — menores */
 .score-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 6px;
   margin-bottom: 14px;
 }
+
 .score-btn {
   padding: 7px 0;
   border-radius: 7px;
@@ -87,466 +86,146 @@ body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--t
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.1s, opacity 0.1s;
   color: #000;
   opacity: 0.5;
 }
-.score-btn:active { transform: scale(0.93); }
-.score-btn.selected { opacity: 1; border-color: rgba(255,255,255,0.35); transform: scale(1.05); }
 
-/* cores NPS */
+.score-btn.selected { opacity: 1; }
+
+/* cores */
 .score-btn[data-v="1"],
 .score-btn[data-v="2"],
 .score-btn[data-v="3"],
 .score-btn[data-v="4"],
 .score-btn[data-v="5"],
 .score-btn[data-v="6"] { background: #ef4444; }
+
 .score-btn[data-v="7"],
-.score-btn[data-v="8"] { background: #facc15; color: #111; }
+.score-btn[data-v="8"] { background: #facc15; }
+
 .score-btn[data-v="9"],
 .score-btn[data-v="10"] { background: var(--green); }
 
-/* RANKING */
-.ranking-card {
-  background: #0d0d0d; border: 1px solid var(--border);
-  border-radius: 10px; overflow: hidden; margin-bottom: 8px;
-}
-.ranking-head {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 12px 14px; background: #111; border-bottom: 1px solid var(--border);
-}
-.ranking-head-title { font-size: 13px; font-weight: 700; color: var(--green); }
-.ranking-head-month { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--dim); text-transform: uppercase; }
-
-/* última atualização */
-.last-updated {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: #383838;
-  text-align: right;
-  margin-bottom: 14px;
-  padding-right: 2px;
-}
-.last-updated span { color: #484848; }
-
+/* ranking */
 .rank-row {
   display: flex; align-items: center; gap: 10px;
-  padding: 11px 12px; border-bottom: 1px solid var(--border-dim);
-  border-left: 3px solid transparent;
+  padding: 11px;
+  border-bottom: 1px solid var(--border-dim);
 }
-.rank-row:last-child { border-bottom: none; }
-.rank-row.medal-0 { border-left-color: var(--gold);   background: rgba(255,215,0,0.04); }
-.rank-row.medal-1 { border-left-color: var(--silver); background: rgba(192,192,192,0.04); }
-.rank-row.medal-2 { border-left-color: var(--bronze); background: rgba(205,127,50,0.04); }
 
-.pos {
-  font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700;
-  min-width: 26px; color: var(--dim); text-align: center;
-}
-.pos.medal-0 { color: var(--gold); }
-.pos.medal-1 { color: var(--silver); }
-.pos.medal-2 { color: var(--bronze); }
+.pos { min-width: 26px; text-align: center; color: var(--dim); }
 
-.bar-container { flex: 1; min-width: 0; }
+.bar-container { flex: 1; }
+
 .op-info {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 5px; font-size: 13px;
-}
-.op-name { font-weight: 500; display: flex; align-items: center; gap: 5px; }
-.new-pts {
-  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 700;
-  color: var(--green); background: rgba(74,222,128,0.1);
-  border: 1px solid rgba(74,222,128,0.2); border-radius: 4px; padding: 1px 5px;
+  display: flex; justify-content: space-between;
+  margin-bottom: 5px;
 }
 
-.pts-total {
-  font-family: 'DM Mono', monospace; font-weight: 700; font-size: 13px; color: #888;
-}
-.pts-total small { font-size: 9px; margin-left: 1px; color: var(--dim); }
-.pts-total.medal-0 { color: var(--gold); }
-.pts-total.medal-1 { color: var(--silver); }
-.pts-total.medal-2 { color: var(--bronze); }
+.pts-total { color: var(--dim); }
 
-.bar-bg { height: 5px; background: #1a1a1a; border-radius: 3px; overflow: hidden; }
-.bar-fill {
-  height: 100%; border-radius: 3px; transition: width 0.6s ease;
-  background: linear-gradient(90deg, #1f3a2a, var(--green));
-}
-.rank-row.medal-0 .bar-fill { background: linear-gradient(90deg, #6a5500, var(--gold)); }
-.rank-row.medal-1 .bar-fill { background: linear-gradient(90deg, #505050, var(--silver)); }
-.rank-row.medal-2 .bar-fill { background: linear-gradient(90deg, #5a3010, var(--bronze)); }
+.bar-bg { height: 5px; background: #1a1a1a; border-radius: 3px; }
+.bar-fill { height: 100%; background: var(--green); }
 
-/* CAPTURA */
-#capture-area {
-  background: #0d0d0d; border: 1px solid var(--border);
-  border-radius: 10px; overflow: hidden; margin-bottom: 14px;
-}
-.capture-header {
-  padding: 16px; background: #111;
-  border-bottom: 1px solid var(--border); text-align: center;
-}
-.capture-title { font-size: 16px; font-weight: 700; color: var(--green); }
-.capture-subtitle {
-  font-size: 9px; color: var(--dim); text-transform: uppercase;
-  letter-spacing: 2px; margin-top: 3px;
-}
-.capture-month-lbl { font-family: 'DM Mono', monospace; font-size: 11px; color: #777; margin-top: 6px; }
-.capture-footer {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 14px; background: #0d0d0d; border-top: 1px solid #161616;
-}
-.capture-brand {
-  font-family: 'DM Mono', monospace; font-size: 9px;
-  color: #333; letter-spacing: 1px; text-transform: uppercase;
-}
-.capture-brand span { color: var(--green); }
-
-/* CONFIG */
-.op-item {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 12px; background: #0d0d0d; border: 1px solid #1e1e1e;
-  border-radius: 6px; margin-bottom: 6px; font-size: 13px;
-}
-.btn-del {
-  background: #2a1010; color: #f87171; border: none;
-  padding: 5px 10px; border-radius: 5px; font-size: 11px; cursor: pointer;
-}
-
-/* TOAST */
 #toast {
-  position: fixed; bottom: 26px; left: 50%;
-  transform: translateX(-50%) translateY(14px);
-  background: #1a1a1a; border: 1px solid #2e2e2e; color: var(--text);
-  padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600;
-  opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s;
-  z-index: 999; white-space: nowrap;
+  position: fixed; bottom: 20px; left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a1a;
+  padding: 10px 18px;
+  border-radius: 10px;
+  opacity: 0;
 }
-#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+#toast.show { opacity: 1; }
 </style>
 </head>
+
 <body>
 <div id="app">
-  <div id="toast"></div>
 
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('ranking')">🏆 Ranking</button>
-    <button class="tab-btn" onclick="switchTab('lancar')">➕ Lançar</button>
-    <button class="tab-btn" onclick="switchTab('captura')">📸 Captura</button>
-    <button class="tab-btn" onclick="switchTab('config')">⚙️ Config</button>
-  </div>
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('ranking')">🏆 Ranking</button>
+<button class="tab-btn" onclick="switchTab('lancar')">➕ Lançar</button>
+</div>
 
-  <div class="content">
+<div class="content">
 
-    <!-- RANKING -->
-    <div id="tab-ranking" class="tab-panel active">
-      <div class="card" style="padding:10px 14px; margin-bottom:10px;">
-        <label class="lbl" style="margin-bottom:5px;">Visualizar Mês</label>
-        <select id="rank-month" class="input-field" style="margin-bottom:0" onchange="renderRanking()"></select>
-      </div>
-      <div class="last-updated" id="last-updated"></div>
-      <div class="ranking-card">
-        <div class="ranking-head">
-          <span class="ranking-head-title">📊 PERFORMANCE NPS</span>
-          <span class="ranking-head-month" id="display-month"></span>
-        </div>
-        <div id="ranking-list"></div>
-      </div>
-    </div>
+<div id="tab-ranking" class="tab-panel active">
+<select id="rank-month" class="input-field" onchange="renderRanking()"></select>
+<div id="ranking-list"></div>
+</div>
 
-    <!-- LANÇAR -->
-    <div id="tab-lancar" class="tab-panel">
-      <div class="card">
-        <label class="lbl">Operador</label>
-        <select id="select-op" class="input-field"></select>
+<div id="tab-lancar" class="tab-panel">
+<select id="select-op" class="input-field"></select>
+<input type="date" id="input-date" class="input-field">
 
-        <label class="lbl">Data do Atendimento</label>
-        <input type="date" id="input-date" class="input-field">
+<div class="score-grid" id="score-grid"></div>
 
-        <label class="lbl">Nota NPS</label>
-        <div class="score-grid" id="score-grid"></div>
-        <input type="hidden" id="selected-score">
+<button class="btn-primary" onclick="addLaunch()">Salvar</button>
+</div>
 
-        <button class="btn-primary" onclick="addLaunch()">Salvar e Atualizar ✅</button>
-      </div>
-    </div>
-
-    <!-- CAPTURA -->
-    <div id="tab-captura" class="tab-panel">
-      <div class="card" style="padding:10px 14px; margin-bottom:14px;">
-        <label class="lbl" style="margin-bottom:5px;">Mês da Captura</label>
-        <select id="capture-month-sel" class="input-field" style="margin-bottom:0" onchange="renderCapture()"></select>
-      </div>
-      <div id="capture-area">
-        <div class="capture-header">
-          <div class="capture-title">📊 NPS RANKING</div>
-          <div class="capture-subtitle">Performance da Equipe</div>
-          <div class="capture-month-lbl" id="capture-month-lbl"></div>
-        </div>
-        <div id="capture-list"></div>
-        <div class="capture-footer">
-          <span class="capture-brand">NPS SYSTEM <span>BY EDUARDA</span></span>
-          <span class="capture-brand" id="capture-date-lbl"></span>
-        </div>
-      </div>
-      <button class="btn-secondary" style="margin-top:14px;" onclick="exportImage()">Salvar imagem para WhatsApp 📲</button>
-    </div>
-
-    <!-- CONFIG -->
-    <div id="tab-config" class="tab-panel">
-      <div class="card">
-        <label class="lbl">Novo Operador</label>
-        <input type="text" id="new-op-name" class="input-field" placeholder="Nome do operador">
-        <button class="btn-primary" onclick="addOperator()">Adicionar à Lista +</button>
-      </div>
-      <label class="lbl">Lista de Operadores</label>
-      <div id="manage-ops-list"></div>
-    </div>
-
-  </div>
+</div>
 </div>
 
 <script>
-const K_OPS     = "nps_ops_v7";
-const K_DATA    = "nps_data_v7";
-const K_UPDATED = "nps_updated_v7";
-
-// Operadores sem pontos base — cada mês começa do zero
-const INITIAL_OPS = [
-  "Liz","Natália","Carolina","Alef","Davi","Daniele",
-  "Michele","Sunamita","Blenda","Fernanda","Lucas",
-  "Eduarda","Kaio","Patrícia"
-];
-
-let operators  = JSON.parse(localStorage.getItem(K_OPS))  || INITIAL_OPS;
-let launches   = JSON.parse(localStorage.getItem(K_DATA)) || [];
-let lastUpdate = localStorage.getItem(K_UPDATED)          || null;
-
-// ── INIT ──────────────────────────────────────────────────────────────────
+let operators = ["Liz","Natália","Carolina","Alef","Davi"];
+let launches = [];
 
 function init() {
   const grid = document.getElementById('score-grid');
   for (let i = 1; i <= 10; i++) {
     const btn = document.createElement('button');
-    btn.className   = 'score-btn';
-    btn.dataset.v   = i;
+    btn.className = 'score-btn';
+    btn.dataset.v = i;
     btn.textContent = i;
-    btn.type        = 'button';
-    btn.onclick     = () => selectScore(i, btn);
+    btn.onclick = () => selectScore(i, btn);
     grid.appendChild(btn);
   }
-
-  populateMonths('rank-month');
-  populateMonths('capture-month-sel');
-  document.getElementById('input-date').value = new Date().toISOString().slice(0, 10);
-  renderAll();
+  renderRanking();
 }
-
-function populateMonths(id) {
-  const sel = document.getElementById(id);
-  const now = new Date();
-  sel.innerHTML = "";
-  for (let i = 0; i < 12; i++) {
-    const d   = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const val = d.toISOString().slice(0, 7);
-    const txt = d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-    sel.innerHTML += `<option value="${val}">${txt}</option>`;
-  }
-}
+let selected = null;
 
 function selectScore(val, btn) {
   document.querySelectorAll('.score-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
-  document.getElementById('selected-score').value = val;
+  selected = val;
 }
 
-// ── DADOS ─────────────────────────────────────────────────────────────────
-
-function save() {
-  localStorage.setItem(K_OPS,  JSON.stringify(operators));
-  localStorage.setItem(K_DATA, JSON.stringify(launches));
-  lastUpdate = new Date().toLocaleString('pt-BR', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit'
-  });
-  localStorage.setItem(K_UPDATED, lastUpdate);
-}
-
-// Cada mês é ciclo independente — só conta lançamentos do mês, score >= 9
-function buildRank(month) {
-  const scoreMap = {};
-  launches
-    .filter(l => l.date.startsWith(month))
-    .forEach(l => {
-      if (l.score >= 9) scoreMap[l.name] = (scoreMap[l.name] || 0) + 1;
-    });
-
-  return operators
-    .map(name => ({
-      name,
-      total: scoreMap[name] || 0
-    }))
-    .sort((a, b) => b.total - a.total);
-}
-
-// ── RENDER ────────────────────────────────────────────────────────────────
-
-function renderAll() {
-  renderOpSelectors();
+function addLaunch() {
+  const name = document.getElementById('select-op').value;
+  launches.push({name, score:selected});
   renderRanking();
-  renderCapture();
-  renderConfigOps();
-}
-
-function rowHTML(op, i, rank) {
-  const max        = rank[0]?.total || 1;
-  const pct        = max > 0 ? (op.total / max) * 100 : 0;
-  const medalClass = i < 3 && op.total > 0 ? `medal-${i}` : '';
-  const emoji      = op.total > 0
-    ? (['🥇','🥈','🥉'][i] ?? `${i+1}º`)
-    : `${i+1}º`;
-  const ptsClass   = medalClass || 'rest';
-
-  return `
-    <div class="rank-row ${medalClass}">
-      <div class="pos ${medalClass}">${emoji}</div>
-      <div class="bar-container">
-        <div class="op-info">
-          <div class="op-name">${op.name}</div>
-          <span class="pts-total ${ptsClass}">${op.total}<small>PTS</small></span>
-        </div>
-        <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
-      </div>
-    </div>`;
 }
 
 function renderRanking() {
-  const month = document.getElementById('rank-month').value;
-  document.getElementById('display-month').innerText = month;
+  const map = {};
+  launches.forEach(l=>{
+    if(l.score>=9) map[l.name]=(map[l.name]||0)+1;
+  });
 
-  const lu = document.getElementById('last-updated');
-  lu.innerHTML = lastUpdate
-    ? `atualizado em <span>${lastUpdate}</span>`
-    : '';
+  const list = operators.map(n=>({name:n,total:map[n]||0}))
+  .sort((a,b)=>b.total-a.total);
 
-  const rank = buildRank(month);
   document.getElementById('ranking-list').innerHTML =
-    rank.map((op, i) => rowHTML(op, i, rank)).join('');
+    list.map((op,i)=>`
+      <div class="rank-row">
+        <div class="pos">${i+1}º</div>
+        <div class="bar-container">
+          <div class="op-info">
+            <div>${op.name}</div>
+            <div class="pts-total">${op.total} PTS</div>
+          </div>
+          <div class="bar-bg">
+            <div class="bar-fill" style="width:${op.total*20}%"></div>
+          </div>
+        </div>
+      </div>
+    `).join('');
 }
 
-function renderCapture() {
-  const month = document.getElementById('capture-month-sel').value;
-  const rank  = buildRank(month);
-  document.getElementById('capture-list').innerHTML =
-    rank.map((op, i) => rowHTML(op, i, rank)).join('');
-
-  const label = new Date(month + '-02')
-    .toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
-    .toUpperCase();
-  document.getElementById('capture-month-lbl').innerText = label;
-  document.getElementById('capture-date-lbl').innerText  =
-    new Date().toLocaleDateString('pt-BR');
-}
-
-function renderOpSelectors() {
-  const sorted = [...operators].sort((a, b) => a.localeCompare(b));
-  document.getElementById('select-op').innerHTML =
-    sorted.map(name => `<option value="${name}">${name}</option>`).join('');
-}
-
-function renderConfigOps() {
-  document.getElementById('manage-ops-list').innerHTML = operators.map((name, i) => `
-    <div class="op-item">
-      <span>${name}</span>
-      <button class="btn-del" onclick="deleteOp(${i})">Remover</button>
-    </div>`).join('');
-}
-
-// ── AÇÕES ─────────────────────────────────────────────────────────────────
-
-function addLaunch() {
-  const name  = document.getElementById('select-op').value;
-  const date  = document.getElementById('input-date').value;
-  const score = document.getElementById('selected-score').value;
-  if (!score) return alert("Selecione uma nota");
-  launches.push({ name, date, score: parseInt(score) });
-  save();
-  document.querySelectorAll('.score-btn').forEach(b => b.classList.remove('selected'));
-  document.getElementById('selected-score').value = '';
-  showToast("✅ Salvo!");
-  renderRanking();
-  renderCapture();
-  switchTab('ranking');
-}
-
-function addOperator() {
-  const name = document.getElementById('new-op-name').value.trim();
-  if (!name) return alert("Digite o nome");
-  operators.push(name);
-  save();
-  document.getElementById('new-op-name').value = "";
-  renderAll();
-  showToast("Operador adicionado!");
-}
-
-function deleteOp(index) {
-  if (confirm("Remover este operador?")) {
-    operators.splice(index, 1);
-    save();
-    renderAll();
-  }
-}
-
-// ── EXPORT ────────────────────────────────────────────────────────────────
-
-async function exportImage() {
-  showToast("Gerando imagem...");
-  try {
-    const canvas = await html2canvas(document.getElementById('capture-area'), {
-      backgroundColor: "#0d0d0d", scale: 2.5, useCORS: true, logging: false
-    });
-    const month = document.getElementById('capture-month-sel').value;
-    if (navigator.canShare) {
-      canvas.toBlob(async blob => {
-        const file = new File([blob], `nps-ranking-${month}.png`, { type: 'image/png' });
-        if (navigator.canShare({ files: [file] })) {
-          await navigator.share({ files: [file], title: 'NPS Ranking' });
-          showToast("Compartilhado! 🎉");
-          return;
-        }
-        download(canvas, month);
-      }, 'image/png');
-    } else {
-      download(canvas, month);
-    }
-  } catch(e) { showToast("Erro ao gerar imagem"); }
-}
-
-function download(canvas, month) {
-  const a = document.createElement('a');
-  a.download = `nps-ranking-${month}.png`;
-  a.href = canvas.toDataURL('image/png');
-  a.click();
-  showToast("Imagem salva! 📸");
-}
-
-// ── UI ────────────────────────────────────────────────────────────────────
-
-function switchTab(t) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + t).classList.add('active');
-  document.querySelectorAll('.tab-btn')[{ranking:0,lancar:1,captura:2,config:3}[t]].classList.add('active');
-  if (t === 'ranking') renderRanking();
-  if (t === 'captura') renderCapture();
-}
-
-let toastTimer;
-function showToast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+function switchTab(t){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
 }
 
 init();
