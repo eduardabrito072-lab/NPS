@@ -13,541 +13,232 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
-html, body {
-  background: #0a0a0a !important;
-  color-scheme: dark;
-  width: 100%;
-  min-height: 100vh;
-  min-height: 100dvh;
-}
-
-body {
-  font-family: 'DM Sans', sans-serif;
-  color: #e8e8e8;
-}
-
-:root {
-  --border: #1e1e1e;
-  --border-dim: #161616;
-  --dim: #555;
-  --green: #4ade80;
-  --gold:   #FFD700;
-  --silver: #C0C0C0;
-  --bronze: #CD7F32;
-}
-
-#app {
-  width: 100%;
-  padding-top: env(safe-area-inset-top, 20px);
-  padding-bottom: env(safe-area-inset-bottom, 40px);
-}
-
-/* TABS */
-.tabs {
-  display: flex;
-  background: #0d0d0d;
-  border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; z-index: 100;
-  padding-top: env(safe-area-inset-top);
-}
-.tab-btn {
-  flex: 1; padding: 13px 0;
-  background: none; border: none; border-bottom: 2px solid transparent;
-  color: var(--dim); font-family: 'DM Sans', sans-serif;
-  font-size: 10px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.6px; cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
-}
-.tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
-
+html, body { background: #0a0a0a !important; color-scheme: dark; width: 100%; min-height: 100vh; }
+body { font-family: 'DM Sans', sans-serif; color: #e8e8e8; }
+#app { width: 100%; padding-bottom: 40px; }
+.tabs { display: flex; background: #0d0d0d; border-bottom: 1px solid #1e1e1e; position: sticky; top: 0; z-index: 100; }
+.tab-btn { flex: 1; padding: 13px 0; background: none; border: none; border-bottom: 2px solid transparent; color: #555; font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; cursor: pointer; }
+.tab-btn.active { color: #4ade80; border-bottom-color: #4ade80; }
 .content { padding: 14px; }
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
-
-/* CARDS */
-.card {
-  background: #111; border: 1px solid var(--border);
-  border-radius: 12px; padding: 14px; margin-bottom: 14px;
-}
-.lbl {
-  display: block; font-size: 10px; font-weight: 700; color: var(--dim);
-  text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;
-}
-.input-field {
-  width: 100%; background: #0d0d0d; border: 1px solid #2a2a2a;
-  border-radius: 8px; color: #fff; padding: 11px 12px; margin-bottom: 12px;
-  font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none;
-}
+.card { background: #111; border: 1px solid #1e1e1e; border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+.lbl { display: block; font-size: 10px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.input-field { width: 100%; background: #0d0d0d; border: 1px solid #2a2a2a; border-radius: 8px; color: #fff; padding: 11px 12px; margin-bottom: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; }
 .input-field option { background: #111; }
-
-.btn-primary {
-  width: 100%; background: var(--green); color: #000; border: none;
-  border-radius: 8px; padding: 12px; font-family: 'DM Sans', sans-serif;
-  font-weight: 700; font-size: 14px; cursor: pointer;
-}
-.btn-secondary {
-  width: 100%; background: #1a2e1a; color: var(--green);
-  border: 1px solid #2a4a2a; border-radius: 8px; padding: 12px;
-  font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer;
-}
-
-/* SCORE BUTTONS */
-.score-grid {
-  display: grid; grid-template-columns: repeat(5, 1fr);
-  gap: 6px; margin-bottom: 14px;
-}
-.score-btn {
-  padding: 7px 0; border-radius: 7px;
-  border: 2px solid transparent;
-  font-family: 'DM Mono', monospace;
-  font-size: 13px; font-weight: 700;
-  cursor: pointer; color: #000; opacity: 0.5;
-  transition: transform 0.1s, opacity 0.1s;
-}
-.score-btn:active { transform: scale(0.93); }
+.id-input { width: 100%; background: #0d0d0d; border: 1px solid #2a2a2a; border-radius: 8px; color: #fff; padding: 11px 12px; margin-bottom: 8px; font-family: 'DM Mono', monospace; font-size: 20px; outline: none; letter-spacing: 3px; }
+.id-result { display: flex; align-items: center; background: #0d0d0d; border: 1px solid #2a2a2a; border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; font-size: 13px; color: #555; min-height: 42px; }
+.id-result.found { border-color: #2a4a2a; color: #4ade80; font-weight: 700; background: #1a2e1a; }
+.id-result.notfound { border-color: #4a1a1a; color: #f87171; background: #2a1010; }
+.btn-primary { width: 100%; background: #4ade80; color: #000; border: none; border-radius: 8px; padding: 12px; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; }
+.btn-secondary { width: 100%; background: #1a2e1a; color: #4ade80; border: 1px solid #2a4a2a; border-radius: 8px; padding: 12px; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; }
+.score-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 14px; }
+.score-btn { padding: 7px 0; border-radius: 7px; border: 2px solid transparent; font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; cursor: pointer; opacity: 0.6; transition: transform 0.1s, opacity 0.1s; }
 .score-btn.selected { opacity: 1; border-color: rgba(255,255,255,0.35); transform: scale(1.05); }
-.score-btn[data-v="1"],.score-btn[data-v="2"],.score-btn[data-v="3"],
-.score-btn[data-v="4"],.score-btn[data-v="5"],.score-btn[data-v="6"] { background: #ef4444; color: #fff; }
-.score-btn[data-v="7"],.score-btn[data-v="8"] { background: #facc15; color: #111; }
-.score-btn[data-v="9"],.score-btn[data-v="10"] { background: var(--green); color: #000; }
-
-/* RANKING */
-.ranking-card {
-  background: #0d0d0d; border: 1px solid var(--border);
-  border-radius: 10px; overflow: hidden; margin-bottom: 8px;
-}
-.ranking-head {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 12px 14px; background: #111; border-bottom: 1px solid var(--border);
-}
-.ranking-head-title { font-size: 13px; font-weight: 700; color: var(--green); }
-.ranking-head-month { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--dim); text-transform: uppercase; }
-
-.last-updated {
-  font-family: 'DM Mono', monospace; font-size: 10px;
-  color: #383838; text-align: right; margin-bottom: 10px; padding-right: 2px;
-}
+.ranking-card { background: #0d0d0d; border: 1px solid #1e1e1e; border-radius: 10px; overflow: hidden; margin-bottom: 8px; }
+.ranking-head { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: #111; border-bottom: 1px solid #1e1e1e; }
+.ranking-head-title { font-size: 13px; font-weight: 700; color: #4ade80; }
+.ranking-head-month { font-family: 'DM Mono', monospace; font-size: 10px; color: #555; text-transform: uppercase; }
+.last-updated { font-family: 'DM Mono', monospace; font-size: 10px; color: #383838; text-align: right; margin-bottom: 10px; }
 .last-updated span { color: #484848; }
-
-.rank-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 11px 12px; border-bottom: 1px solid var(--border-dim);
-  border-left: 3px solid transparent;
-}
+.rank-row { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-bottom: 1px solid #161616; border-left: 3px solid transparent; }
 .rank-row:last-child { border-bottom: none; }
-.rank-row.medal-0 { border-left-color: var(--gold);   background: rgba(255,215,0,0.04); }
-.rank-row.medal-1 { border-left-color: var(--silver); background: rgba(192,192,192,0.04); }
-.rank-row.medal-2 { border-left-color: var(--bronze); background: rgba(205,127,50,0.04); }
-
-.pos {
-  font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700;
-  min-width: 26px; color: var(--dim); text-align: center;
-}
-.pos.medal-0 { color: var(--gold); }
-.pos.medal-1 { color: var(--silver); }
-.pos.medal-2 { color: var(--bronze); }
-
+.rank-row.medal-0 { border-left-color: #FFD700; background: rgba(255,215,0,0.04); }
+.rank-row.medal-1 { border-left-color: #C0C0C0; background: rgba(192,192,192,0.04); }
+.rank-row.medal-2 { border-left-color: #CD7F32; background: rgba(205,127,50,0.04); }
+.pos { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700; min-width: 26px; color: #555; text-align: center; }
+.pos.medal-0 { color: #FFD700; }
+.pos.medal-1 { color: #C0C0C0; }
+.pos.medal-2 { color: #CD7F32; }
 .bar-container { flex: 1; min-width: 0; }
-.op-info {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 5px; font-size: 13px;
-}
+.op-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 13px; }
 .op-name { font-weight: 500; }
-
-/* pontuação — cor espelha a medalha */
-.pts-total {
-  font-family: 'DM Mono', monospace; font-weight: 700; font-size: 13px; color: #666;
-}
-.pts-total small { font-size: 9px; margin-left: 1px; color: var(--dim); }
-.pts-total.medal-0 { color: var(--gold); }
-.pts-total.medal-1 { color: var(--silver); }
-.pts-total.medal-2 { color: var(--bronze); }
-
+.pts-total { font-family: 'DM Mono', monospace; font-weight: 700; font-size: 13px; color: #666; }
+.pts-total small { font-size: 9px; margin-left: 1px; color: #555; }
+.pts-total.medal-0 { color: #FFD700; }
+.pts-total.medal-1 { color: #C0C0C0; }
+.pts-total.medal-2 { color: #CD7F32; }
 .bar-bg { height: 5px; background: #1a1a1a; border-radius: 3px; overflow: hidden; }
 .bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
-
-/* CAPTURA */
-#capture-area {
-  background: #0d0d0d; border: 1px solid var(--border);
-  border-radius: 10px; overflow: hidden; margin-bottom: 14px;
-}
+#capture-area { background: #0d0d0d; border: 1px solid #1e1e1e; border-radius: 10px; overflow: hidden; margin-bottom: 14px; }
 #capture-area .rank-row { padding: 7px 12px; }
 #capture-area .op-info { margin-bottom: 3px; font-size: 12px; }
 #capture-area .bar-bg { height: 3px; }
-
-.capture-header {
-  padding: 12px 16px; background: #111;
-  border-bottom: 1px solid var(--border); text-align: center;
-}
-.capture-title { font-size: 16px; font-weight: 700; color: var(--green); }
-.capture-subtitle { font-size: 9px; color: var(--dim); text-transform: uppercase; letter-spacing: 2px; margin-top: 3px; }
+.capture-header { padding: 12px 16px; background: #111; border-bottom: 1px solid #1e1e1e; text-align: center; }
+.capture-title { font-size: 16px; font-weight: 700; color: #4ade80; }
+.capture-subtitle { font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: 2px; margin-top: 3px; }
 .capture-month-lbl { font-family: 'DM Mono', monospace; font-size: 11px; color: #777; margin-top: 6px; }
-.capture-footer {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 14px; background: #0d0d0d; border-top: 1px solid #161616;
-}
+.capture-footer { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #0d0d0d; border-top: 1px solid #161616; }
 .capture-brand { font-family: 'DM Mono', monospace; font-size: 9px; color: #333; letter-spacing: 1px; text-transform: uppercase; }
-.capture-brand span { color: var(--green); }
-
-/* CONFIG */
-.op-item {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 12px; background: #0d0d0d; border: 1px solid #1e1e1e;
-  border-radius: 6px; margin-bottom: 6px; font-size: 13px;
-}
+.capture-brand span { color: #4ade80; }
+.op-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: #0d0d0d; border: 1px solid #1e1e1e; border-radius: 6px; margin-bottom: 6px; font-size: 13px; }
 .btn-del { background: #2a1010; color: #f87171; border: none; padding: 5px 10px; border-radius: 5px; font-size: 11px; cursor: pointer; }
-
-/* TOAST */
-#toast {
-  position: fixed; bottom: 26px; left: 50%;
-  transform: translateX(-50%) translateY(14px);
-  background: #1a1a1a; border: 1px solid #2e2e2e; color: #e8e8e8;
-  padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600;
-  opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s;
-  z-index: 999; white-space: nowrap;
-}
+.id-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; background: #0d0d0d; border: 1px solid #1e1e1e; border-radius: 6px; margin-bottom: 6px; font-size: 13px; }
+.id-item-info { display: flex; gap: 10px; align-items: center; }
+.id-badge { font-family: 'DM Mono', monospace; font-size: 11px; color: #4ade80; background: #1a2e1a; border: 1px solid #2a4a2a; border-radius: 4px; padding: 2px 7px; }
+.input-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.input-row .input-small { flex: 1; background: #0d0d0d; border: 1px solid #2a2a2a; border-radius: 8px; color: #fff; padding: 10px 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; }
+.input-row .input-id { width: 90px; flex-shrink: 0; font-family: 'DM Mono', monospace; letter-spacing: 2px; }
+#toast { position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%) translateY(14px); background: #1a1a1a; border: 1px solid #2e2e2e; color: #e8e8e8; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 999; white-space: nowrap; }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.section-title { font-size: 11px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 1px; margin: 16px 0 8px; }
 </style>
 </head>
 <body>
 <div id="app">
-  <div id="toast"></div>
+<div id="toast"></div>
+<div class="tabs">
+<button class="tab-btn active" onclick="switchTab('ranking')">🏆 Ranking</button>
+<button class="tab-btn" onclick="switchTab('lancar')">➕ Lançar</button>
+<button class="tab-btn" onclick="switchTab('captura')">📸 Captura</button>
+<button class="tab-btn" onclick="switchTab('config')">⚙️ Config</button>
+</div>
+<div class="content">
 
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('ranking')">🏆 Ranking</button>
-    <button class="tab-btn" onclick="switchTab('lancar')">➕ Lançar</button>
-    <button class="tab-btn" onclick="switchTab('captura')">📸 Captura</button>
-    <button class="tab-btn" onclick="switchTab('config')">⚙️ Config</button>
-  </div>
-
-  <div class="content">
-
-    <!-- RANKING -->
-    <div id="tab-ranking" class="tab-panel active">
-      <div class="card" style="padding:10px 14px; margin-bottom:10px;">
-        <label class="lbl" style="margin-bottom:5px;">Visualizar Mês</label>
-        <select id="rank-month" class="input-field" style="margin-bottom:0" onchange="renderRanking()"></select>
-      </div>
-      <div class="last-updated" id="last-updated"></div>
-      <div class="ranking-card">
-        <div class="ranking-head">
-          <span class="ranking-head-title">📊 PERFORMANCE NPS</span>
-          <span class="ranking-head-month" id="display-month"></span>
-        </div>
-        <div id="ranking-list"></div>
-      </div>
-    </div>
-
-    <!-- LANÇAR -->
-    <div id="tab-lancar" class="tab-panel">
-      <div class="card">
-        <label class="lbl">Operador</label>
-        <select id="select-op" class="input-field"></select>
-        <label class="lbl">Data do Atendimento</label>
-        <input type="date" id="input-date" class="input-field">
-        <label class="lbl">Nota NPS</label>
-        <div class="score-grid" id="score-grid"></div>
-        <input type="hidden" id="selected-score">
-        <button class="btn-primary" onclick="addLaunch()">Salvar e Atualizar ✅</button>
-      </div>
-    </div>
-
-    <!-- CAPTURA -->
-    <div id="tab-captura" class="tab-panel">
-      <div class="card" style="padding:10px 14px; margin-bottom:14px;">
-        <label class="lbl" style="margin-bottom:5px;">Mês da Captura</label>
-        <select id="capture-month-sel" class="input-field" style="margin-bottom:0" onchange="renderCapture()"></select>
-      </div>
-      <div id="capture-area">
-        <div class="capture-header">
-          <div class="capture-title">📊 NPS RANKING</div>
-          <div class="capture-subtitle">Performance da Equipe</div>
-          <div class="capture-month-lbl" id="capture-month-lbl"></div>
-        </div>
-        <div id="capture-list"></div>
-        <div class="capture-footer">
-          <span class="capture-brand">NPS SYSTEM <span>BY EDUARDA</span></span>
-          <span class="capture-brand" id="capture-date-lbl"></span>
-        </div>
-      </div>
-      <button class="btn-secondary" style="margin-top:14px;" onclick="exportImage()">Salvar imagem para WhatsApp 📲</button>
-    </div>
-
-    <!-- CONFIG -->
-    <div id="tab-config" class="tab-panel">
-      <div class="card">
-        <label class="lbl">Novo Operador</label>
-        <input type="text" id="new-op-name" class="input-field" placeholder="Nome do operador">
-        <button class="btn-primary" onclick="addOperator()">Adicionar à Lista +</button>
-      </div>
-      <label class="lbl">Lista de Operadores</label>
-      <div id="manage-ops-list"></div>
-    </div>
-
-  </div>
+<div id="tab-ranking" class="tab-panel active">
+<div class="card" style="padding:10px 14px; margin-bottom:10px;">
+<label class="lbl" style="margin-bottom:5px;">Visualizar Mês</label>
+<select id="rank-month" class="input-field" style="margin-bottom:0" onchange="renderRanking()"></select>
+</div>
+<div class="last-updated" id="last-updated"></div>
+<div class="ranking-card">
+<div class="ranking-head">
+<span class="ranking-head-title">📊 PERFORMANCE NPS</span>
+<span class="ranking-head-month" id="display-month"></span>
+</div>
+<div id="ranking-list"></div>
+</div>
 </div>
 
+<div id="tab-lancar" class="tab-panel">
+<div class="card">
+<label class="lbl">ID do Operador</label>
+<input type="number" id="id-input" class="id-input" placeholder="0012" oninput="lookupId(this.value)" />
+<div class="id-result" id="id-result">Digite o ID para identificar o operador</div>
+<label class="lbl">Operador</label>
+<select id="select-op" class="input-field"></select>
+<label class="lbl">Data do Atendimento</label>
+<input type="date" id="input-date" class="input-field">
+<label class="lbl">Nota NPS</label>
+<div class="score-grid" id="score-grid"></div>
+<input type="hidden" id="selected-score">
+<button class="btn-primary" onclick="addLaunch()">Salvar e Atualizar ✅</button>
+</div>
+</div>
+
+<div id="tab-captura" class="tab-panel">
+<div class="card" style="padding:10px 14px; margin-bottom:14px;">
+<label class="lbl" style="margin-bottom:5px;">Mês da Captura</label>
+<select id="capture-month-sel" class="input-field" style="margin-bottom:0" onchange="renderCapture()"></select>
+</div>
+<div id="capture-area">
+<div class="capture-header">
+<div class="capture-title">📊 NPS RANKING</div>
+<div class="capture-subtitle">Performance da Equipe</div>
+<div class="capture-month-lbl" id="capture-month-lbl"></div>
+</div>
+<div id="capture-list"></div>
+<div class="capture-footer">
+<span class="capture-brand">NPS SYSTEM <span>BY EDUARDA</span></span>
+<span class="capture-brand" id="capture-date-lbl"></span>
+</div>
+</div>
+<button class="btn-secondary" style="margin-top:14px;" onclick="exportImage()">Salvar imagem para WhatsApp 📲</button>
+</div>
+
+<div id="tab-config" class="tab-panel">
+
+  <div class="section-title">Operadores do Ranking</div>
+  <div class="card">
+    <label class="lbl">Novo Operador</label>
+    <input type="text" id="new-op-name" class="input-field" placeholder="Nome do operador">
+    <button class="btn-primary" onclick="addOperator()">Adicionar à Lista +</button>
+  </div>
+  <div id="manage-ops-list"></div>
+
+  <div class="section-title">Mapa de IDs</div>
+  <div class="card">
+    <label class="lbl">Novo ID</label>
+    <div class="input-row">
+      <input type="number" id="new-id-num" class="input-small input-id" placeholder="0050">
+      <input type="text" id="new-id-name" class="input-small" placeholder="Nome do operador">
+    </div>
+    <button class="btn-primary" onclick="addIdMap()">Adicionar ID +</button>
+  </div>
+  <div id="manage-ids-list"></div>
+
+</div>
+
+</div>
+</div>
 <script>
-const K_OPS     = "nps_ops_v8";
-const K_DATA    = "nps_data_v8";
-const K_UPDATED = "nps_updated_v8";
-
-const OPERATORS = [
-  "Liz","Natália","Carolina","Alef","Davi","Daniele",
-  "Michele","Sunamita","Blenda","Fernanda","Lucas",
-  "Eduarda","Kaio","Patrícia"
-];
-
-// Pontos de março pré-carregados como lançamentos reais
-// Cada ponto = 1 avaliação com nota 10 na data 2026-03-26
-const MARCH_SCORES = {
-  "Liz": 42, "Natália": 21, "Carolina": 15, "Alef": 15,
-  "Davi": 14, "Daniele": 13, "Michele": 13, "Sunamita": 12,
-  "Blenda": 11, "Fernanda": 9, "Lucas": 8, "Eduarda": 6,
-  "Kaio": 3, "Patrícia": 1
+const K_OPS="nps_ops_v8",K_DATA="nps_data_v8",K_UPDATED="nps_updated_v8",K_IDS="nps_ids_v8";
+const OPERATORS=["Liz","Nat\u00e1lia","Carolina","Alef","Davi","Daniele","Michele","Sunamita","Blenda","Fernanda","Lucas","Eduarda","Kaio","Patr\u00edcia"];
+const DEFAULT_ID_MAP={
+  "1":"Lucas","2":"Eliane","3":"Pedro Henrique","4":"Kaio","5":"Antonio",
+  "6":"Claudinara","7":"Daniele","8":"Michele","9":"Mariana","10":"Davi",
+  "11":"Cledir","12":"Liz","13":"Carolina","14":"Elienilde","15":"Fagner",
+  "16":"Blenda","17":"Eduarda","18":"Ana Luisa","19":"Cristina","20":"Elisangela",
+  "21":"Fernanda Emil","22":"Eduarda da M","23":"Lucifabio","24":"Ana Paula","25":"Pedro Ferreira",
+  "26":"Jucilene","27":"Ester","28":"Ayslan","29":"Marilene","30":"Taciane",
+  "31":"Barbara","32":"Andreia","33":"Elisabete","34":"Nayane","35":"Calita",
+  "36":"Daiane","37":"Irlane","38":"Vanessa","39":"Janildo","40":"Tayn\u00e1",
+  "41":"Alef","42":"Fernanda O","43":"Leila","44":"Ana Paula","45":"Poliana",
+  "46":"Nat\u00e1lia","47":"Izabella","48":"Camila","49":"Sunamita","51":"Fernanda",
+  "52":"Tatiana","53":"Rafaella","54":"Thais","57":"Creusa","65":"Patr\u00edcia",
+  "67":"Erika","73":"Rafael Reinan","75":"Elinaldo","82":"Fernanda Fari",
+  "85":"Mirllem","94":"Danyella","95":"Marilia","98":"Glaucia","105":"Rafael Manoel",
+  "109":"Leonardo","111":"Eder","112":"Fabio","114":"Nathalia","116":"Valdilene",
+  "117":"Vanessa","123":"Cicera","133":"Lara","135":"Sandra","136":"Sara Safira"
 };
-
-function seedMarch(launches) {
-  // Verifica se março já foi semeado
-  const already = launches.some(l => l.date === "2026-03-26" && l._seed);
-  if (already) return launches;
-  const seeds = [];
-  for (const [name, pts] of Object.entries(MARCH_SCORES)) {
-    for (let i = 0; i < pts; i++) {
-      seeds.push({ name, date: "2026-03-26", score: 10, _seed: true });
-    }
-  }
-  return [...launches, ...seeds];
-}
-
-let operators  = JSON.parse(localStorage.getItem(K_OPS))  || OPERATORS;
-let launches   = JSON.parse(localStorage.getItem(K_DATA)) || [];
-let lastUpdate = localStorage.getItem(K_UPDATED)          || null;
-
-// Semeia março se necessário
-launches = seedMarch(launches);
-localStorage.setItem(K_DATA, JSON.stringify(launches));
-
-// ── INIT ──────────────────────────────────────────────────────────────────
-
-function init() {
-  const grid = document.getElementById('score-grid');
-  for (let i = 1; i <= 10; i++) {
-    const btn = document.createElement('button');
-    btn.className   = 'score-btn';
-    btn.dataset.v   = i;
-    btn.textContent = i;
-    btn.type        = 'button';
-    // cor inline — não depende de CSS
-    if (i <= 6)       { btn.style.background = '#ef4444'; btn.style.color = '#fff'; }
-    else if (i <= 8)  { btn.style.background = '#ca8a04'; btn.style.color = '#fff'; }
-    else              { btn.style.background = '#16a34a'; btn.style.color = '#fff'; }
-    btn.onclick = () => selectScore(i, btn);
-    grid.appendChild(btn);
-  }
-  populateMonths('rank-month');
-  populateMonths('capture-month-sel');
-  document.getElementById('input-date').value = new Date().toISOString().slice(0, 10);
-  renderAll();
-}
-
-function populateMonths(id) {
-  const sel = document.getElementById(id);
-  const now = new Date();
-  sel.innerHTML = "";
-  for (let i = 0; i < 12; i++) {
-    const d   = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const val = d.toISOString().slice(0, 7);
-    const txt = d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-    sel.innerHTML += `<option value="${val}">${txt}</option>`;
-  }
-}
-
-function selectScore(val, btn) {
-  document.querySelectorAll('.score-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  document.getElementById('selected-score').value = val;
-}
-
-// ── DADOS ─────────────────────────────────────────────────────────────────
-
-function save() {
-  localStorage.setItem(K_OPS,  JSON.stringify(operators));
-  localStorage.setItem(K_DATA, JSON.stringify(launches));
-  lastUpdate = new Date().toLocaleString('pt-BR', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit'
-  });
-  localStorage.setItem(K_UPDATED, lastUpdate);
-}
-
-// Cada mês é ciclo independente
-function buildRank(month) {
-  const scoreMap = {};
-  launches
-    .filter(l => l.date.startsWith(month))
-    .forEach(l => {
-      if (l.score >= 9) scoreMap[l.name] = (scoreMap[l.name] || 0) + 1;
-    });
-  return operators
-    .map(name => ({ name, total: scoreMap[name] || 0 }))
-    .sort((a, b) => b.total - a.total);
-}
-
-// ── RENDER ────────────────────────────────────────────────────────────────
-
-function renderAll() {
-  renderOpSelectors();
-  renderRanking();
-  renderCapture();
-  renderConfigOps();
-}
-
-function rowHTML(op, i, rank) {
-  const max        = rank[0]?.total || 1;
-  const pct        = max > 0 ? (op.total / max) * 100 : 0;
-  const medalClass = i < 3 && op.total > 0 ? `medal-${i}` : '';
-  const emoji      = op.total > 0 ? (['🥇','🥈','🥉'][i] ?? `${i+1}º`) : `${i+1}º`;
-  const ptsClass   = medalClass || '';
-
-  return `
-    <div class="rank-row ${medalClass}">
-      <div class="pos ${medalClass}">${emoji}</div>
-      <div class="bar-container">
-        <div class="op-info">
-          <div class="op-name">${op.name}</div>
-          <span class="pts-total ${ptsClass}">${op.total}<small>PTS</small></span>
-        </div>
-        <div class="bar-bg"><div class="bar-fill" style="width:${pct}%; background:${i===0&&op.total>0?'#FFD700':i===1&&op.total>0?'#C0C0C0':i===2&&op.total>0?'#CD7F32':'#4ade80'}"></div></div>
-      </div>
-    </div>`;
-}
-
-function renderRanking() {
-  const month = document.getElementById('rank-month').value;
-  document.getElementById('display-month').innerText = month;
-  const lu = document.getElementById('last-updated');
-  lu.innerHTML = lastUpdate ? `atualizado em <span>${lastUpdate}</span>` : '';
-  const rank = buildRank(month);
-  document.getElementById('ranking-list').innerHTML =
-    rank.map((op, i) => rowHTML(op, i, rank)).join('');
-}
-
-function renderCapture() {
-  const month = document.getElementById('capture-month-sel').value;
-  const rank  = buildRank(month);
-  document.getElementById('capture-list').innerHTML =
-    rank.map((op, i) => rowHTML(op, i, rank)).join('');
-  const label = new Date(month + '-02')
-    .toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }).toUpperCase();
-  document.getElementById('capture-month-lbl').innerText = label;
-  document.getElementById('capture-date-lbl').innerText  = new Date().toLocaleDateString('pt-BR');
-}
-
-function renderOpSelectors() {
-  const sorted = [...operators].sort((a, b) => a.localeCompare(b));
-  document.getElementById('select-op').innerHTML =
-    sorted.map(name => `<option value="${name}">${name}</option>`).join('');
-}
-
-function renderConfigOps() {
-  document.getElementById('manage-ops-list').innerHTML = operators.map((name, i) => `
-    <div class="op-item">
-      <span>${name}</span>
-      <button class="btn-del" onclick="deleteOp(${i})">Remover</button>
-    </div>`).join('');
-}
-
-// ── AÇÕES ─────────────────────────────────────────────────────────────────
-
-function addLaunch() {
-  const name  = document.getElementById('select-op').value;
-  const date  = document.getElementById('input-date').value;
-  const score = document.getElementById('selected-score').value;
-  if (!score) return alert("Selecione uma nota");
-  launches.push({ name, date, score: parseInt(score) });
-  save();
-  document.querySelectorAll('.score-btn').forEach(b => b.classList.remove('selected'));
-  document.getElementById('selected-score').value = '';
-  showToast("✅ Salvo!");
-  renderRanking();
-  renderCapture();
-  switchTab('ranking');
-}
-
-function addOperator() {
-  const name = document.getElementById('new-op-name').value.trim();
-  if (!name) return alert("Digite o nome");
-  operators.push(name);
-  save();
-  document.getElementById('new-op-name').value = "";
-  renderAll();
-  showToast("Operador adicionado!");
-}
-
-function deleteOp(index) {
-  if (confirm("Remover este operador?")) {
-    operators.splice(index, 1);
-    save();
-    renderAll();
-  }
-}
-
-// ── EXPORT ────────────────────────────────────────────────────────────────
-
-async function exportImage() {
-  showToast("Gerando imagem...");
-  try {
-    const canvas = await html2canvas(document.getElementById('capture-area'), {
-      backgroundColor: "#0d0d0d", scale: 2.5, useCORS: true, logging: false
-    });
-    const month = document.getElementById('capture-month-sel').value;
-    if (navigator.canShare) {
-      canvas.toBlob(async blob => {
-        const file = new File([blob], `nps-ranking-${month}.png`, { type: 'image/png' });
-        if (navigator.canShare({ files: [file] })) {
-          await navigator.share({ files: [file], title: 'NPS Ranking' });
-          showToast("Compartilhado! 🎉");
-          return;
-        }
-        download(canvas, month);
-      }, 'image/png');
-    } else {
-      download(canvas, month);
-    }
-  } catch(e) { showToast("Erro ao gerar imagem"); }
-}
-
-function download(canvas, month) {
-  const a = document.createElement('a');
-  a.download = `nps-ranking-${month}.png`;
-  a.href = canvas.toDataURL('image/png');
-  a.click();
-  showToast("Imagem salva! 📸");
-}
-
-// ── UI ────────────────────────────────────────────────────────────────────
-
-function switchTab(t) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + t).classList.add('active');
-  document.querySelectorAll('.tab-btn')[{ranking:0,lancar:1,captura:2,config:3}[t]].classList.add('active');
-  if (t === 'ranking') renderRanking();
-  if (t === 'captura') renderCapture();
-}
-
+const MARCH_SCORES={"Liz":42,"Nat\u00e1lia":21,"Carolina":15,"Alef":15,"Davi":14,"Daniele":13,"Michele":13,"Sunamita":12,"Blenda":11,"Fernanda":9,"Lucas":8,"Eduarda":6,"Kaio":3,"Patr\u00edcia":1};
+function seedMarch(l){if(l.some(x=>x.date==="2026-03-26"&&x._seed))return l;const s=[];for(const[n,p]of Object.entries(MARCH_SCORES))for(let i=0;i<p;i++)s.push({name:n,date:"2026-03-26",score:10,_seed:true});return[...l,...s];}
+let operators=JSON.parse(localStorage.getItem(K_OPS))||OPERATORS;
+let launches=JSON.parse(localStorage.getItem(K_DATA))||[];
+let lastUpdate=localStorage.getItem(K_UPDATED)||null;
+let idMap=JSON.parse(localStorage.getItem(K_IDS))||DEFAULT_ID_MAP;
+launches=seedMarch(launches);
+localStorage.setItem(K_DATA,JSON.stringify(launches));
+function lookupId(val){
+  const n=parseInt(val);
+  const res=document.getElementById("id-result");
+  const sel=document.getElementById("select-op");
+  if(!val||isNaN(n)){res.className="id-result";res.textContent="Digite o ID para identificar o operador";return;}
+  const name=idMap[String(n)];
+  if(name){res.className="id-result found";res.textContent="\u2713 "+String(n).padStart(4,"0")+" \u2192 "+name;
+    const opt=[...sel.options].find(o=>o.value===name);if(opt)sel.value=name;}
+  else{res.className="id-result notfound";res.textContent="\u2717 ID "+String(n).padStart(4,"0")+" n\u00e3o encontrado";}}
+function init(){
+  const grid=document.getElementById("score-grid");
+  for(let i=1;i<=10;i++){const btn=document.createElement("button");btn.className="score-btn";btn.dataset.v=i;btn.textContent=i;btn.type="button";
+  if(i<=6){btn.style.background="#ef4444";btn.style.color="#fff";}
+  else if(i<=8){btn.style.background="#ca8a04";btn.style.color="#fff";}
+  else{btn.style.background="#16a34a";btn.style.color="#fff";}
+  btn.onclick=()=>selectScore(i,btn);grid.appendChild(btn);}
+  populateMonths("rank-month");populateMonths("capture-month-sel");
+  document.getElementById("input-date").value=new Date().toISOString().slice(0,10);
+  renderAll();}
+function populateMonths(id){const sel=document.getElementById(id);const now=new Date();sel.innerHTML="";for(let i=0;i<12;i++){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const val=d.toISOString().slice(0,7);const txt=d.toLocaleDateString("pt-BR",{month:"long",year:"numeric"});sel.innerHTML+=`<option value="${val}">${txt}</option>`;}}
+function selectScore(val,btn){document.querySelectorAll(".score-btn").forEach(b=>b.classList.remove("selected"));btn.classList.add("selected");document.getElementById("selected-score").value=val;}
+function saveIds(){localStorage.setItem(K_IDS,JSON.stringify(idMap));}
+function save(){localStorage.setItem(K_OPS,JSON.stringify(operators));localStorage.setItem(K_DATA,JSON.stringify(launches));lastUpdate=new Date().toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});localStorage.setItem(K_UPDATED,lastUpdate);}
+function buildRank(month){const scoreMap={};launches.filter(l=>l.date.startsWith(month)).forEach(l=>{if(l.score>=9)scoreMap[l.name]=(scoreMap[l.name]||0)+1;});return operators.map(name=>({name,total:scoreMap[name]||0})).sort((a,b)=>b.total-a.total);}
+function renderAll(){renderOpSelectors();renderRanking();renderCapture();renderConfigOps();renderIdList();}
+function rowHTML(op,i,rank){const max=rank[0]?.total||1;const pct=max>0?(op.total/max)*100:0;const medalClass=i<3&&op.total>0?`medal-${i}`:"";const emoji=op.total>0?(["🥇","🥈","🥉"][i]??`${i+1}º`):`${i+1}º`;const ptsClass=medalClass||"";const barColor=i===0&&op.total>0?"#FFD700":i===1&&op.total>0?"#C0C0C0":i===2&&op.total>0?"#CD7F32":"#4ade80";
+return`<div class="rank-row ${medalClass}"><div class="pos ${medalClass}">${emoji}</div><div class="bar-container"><div class="op-info"><div class="op-name">${op.name}</div><span class="pts-total ${ptsClass}">${op.total}<small>PTS</small></span></div><div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${barColor}"></div></div></div></div>`;}
+function renderRanking(){const month=document.getElementById("rank-month").value;document.getElementById("display-month").innerText=month;const lu=document.getElementById("last-updated");lu.innerHTML=lastUpdate?`atualizado em <span>${lastUpdate}</span>`:"";const rank=buildRank(month);document.getElementById("ranking-list").innerHTML=rank.map((op,i)=>rowHTML(op,i,rank)).join("");}
+function renderCapture(){const month=document.getElementById("capture-month-sel").value;const rank=buildRank(month);document.getElementById("capture-list").innerHTML=rank.map((op,i)=>rowHTML(op,i,rank)).join("");const label=new Date(month+"-02").toLocaleDateString("pt-BR",{month:"long",year:"numeric"}).toUpperCase();document.getElementById("capture-month-lbl").innerText=label;document.getElementById("capture-date-lbl").innerText=new Date().toLocaleDateString("pt-BR");}
+function renderOpSelectors(){const sorted=[...operators].sort((a,b)=>a.localeCompare(b));document.getElementById("select-op").innerHTML=sorted.map(name=>`<option value="${name}">${name}</option>`).join("");}
+function renderConfigOps(){document.getElementById("manage-ops-list").innerHTML=operators.map((name,i)=>`<div class="op-item"><span>${name}</span><button class="btn-del" onclick="deleteOp(${i})">Remover</button></div>`).join("");}
+function renderIdList(){const entries=Object.entries(idMap).sort((a,b)=>parseInt(a[0])-parseInt(b[0]));document.getElementById("manage-ids-list").innerHTML=entries.map(([id,name])=>`<div class="id-item"><div class="id-item-info"><span class="id-badge">${String(parseInt(id)).padStart(4,"0")}</span><span>${name}</span></div><button class="btn-del" onclick="deleteIdMap('${id}')">Remover</button></div>`).join("");}
+function addOperator(){const name=document.getElementById("new-op-name").value.trim();if(!name)return alert("Digite o nome");operators.push(name);save();document.getElementById("new-op-name").value="";renderAll();showToast("Operador adicionado!");}
+function deleteOp(index){if(confirm("Remover este operador?")){operators.splice(index,1);save();renderAll();}}
+function addIdMap(){const num=document.getElementById("new-id-num").value.trim();const name=document.getElementById("new-id-name").value.trim();if(!num||!name)return alert("Preencha o ID e o nome");idMap[String(parseInt(num))]=name;saveIds();document.getElementById("new-id-num").value="";document.getElementById("new-id-name").value="";renderIdList();showToast("ID adicionado!");}
+function deleteIdMap(id){if(confirm("Remover ID "+String(parseInt(id)).padStart(4,"0")+"?")){delete idMap[id];saveIds();renderIdList();}}
+function addLaunch(){const name=document.getElementById("select-op").value;const date=document.getElementById("input-date").value;const score=document.getElementById("selected-score").value;if(!score)return alert("Selecione uma nota");launches.push({name,date,score:parseInt(score)});save();document.querySelectorAll(".score-btn").forEach(b=>b.classList.remove("selected"));document.getElementById("selected-score").value="";document.getElementById("id-input").value="";document.getElementById("id-result").className="id-result";document.getElementById("id-result").textContent="Digite o ID para identificar o operador";showToast("Salvo!");renderRanking();renderCapture();switchTab("ranking");}
+async function exportImage(){showToast("Gerando...");try{const canvas=await html2canvas(document.getElementById("capture-area"),{backgroundColor:"#0d0d0d",scale:2.5,useCORS:true,logging:false});const month=document.getElementById("capture-month-sel").value;if(navigator.canShare){canvas.toBlob(async blob=>{const file=new File([blob],`nps-${month}.png`,{type:"image/png"});if(navigator.canShare({files:[file]})){await navigator.share({files:[file],title:"NPS Ranking"});showToast("Compartilhado!");return;}download(canvas,month);},"image/png");}else{download(canvas,month);}}catch(e){showToast("Erro");}}
+function download(canvas,month){const a=document.createElement("a");a.download=`nps-${month}.png`;a.href=canvas.toDataURL("image/png");a.click();showToast("Salvo!");}
+function switchTab(t){document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));document.getElementById("tab-"+t).classList.add("active");document.querySelectorAll(".tab-btn")[{ranking:0,lancar:1,captura:2,config:3}[t]].classList.add("active");if(t==="ranking")renderRanking();if(t==="captura")renderCapture();}
 let toastTimer;
-function showToast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
-}
-
+function showToast(msg){const el=document.getElementById("toast");el.textContent=msg;el.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),2200);}
 init();
-</script>
-</body>
-</html>
