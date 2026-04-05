@@ -234,19 +234,34 @@ body {
       </div>
     </div>
 
-    <!-- LANÇAR -->
-    <div id="tab-lancar" class="tab-panel">
-      <div class="card">
-        <label class="lbl">Operador</label>
-        <select id="select-op" class="input-field"></select>
-        <label class="lbl">Data do Atendimento</label>
-        <input type="date" id="input-date" class="input-field">
-        <label class="lbl">Nota NPS</label>
-        <div class="score-grid" id="score-grid"></div>
-        <input type="hidden" id="selected-score">
-        <button class="btn-primary" onclick="addLaunch()">Salvar e Atualizar ✅</button>
-      </div>
-    </div>
+ <!-- LANÇAR -->
+<div id="tab-lancar" class="tab-panel">
+  <div class="card">
+
+    <label class="lbl">Buscar por Caixa</label>
+    <input type="text"
+           id="search-id"
+           class="input-field"
+           placeholder="Digite o caixa (ex: 0046)"
+           oninput="autoFillOperator()">
+
+    <label class="lbl">Operador</label>
+    <select id="select-op" class="input-field"></select>
+
+    <label class="lbl">Data do Atendimento</label>
+    <input type="date" id="input-date" class="input-field">
+
+    <label class="lbl">Nota NPS</label>
+    <div class="score-grid" id="score-grid"></div>
+
+    <input type="hidden" id="selected-score">
+
+    <button class="btn-primary" onclick="addLaunch()">
+      Salvar e Atualizar ✅
+    </button>
+
+  </div>
+</div>
 
     <!-- CAPTURA -->
     <div id="tab-captura" class="tab-panel">
@@ -272,8 +287,8 @@ body {
     <!-- CONFIG -->
     <div id="tab-config" class="tab-panel">
       <div class="card">
-        <label class="lbl">Novo Operador</label>
-        <input type="text" id="new-op-name" class="input-field" placeholder="Nome do operador">
+        <label class="lbl">Buscar por caixas</label>
+        <input type="text" id="search-id" class="input-field" placeholder="Ex:0046" onninput="autoFillOperador()">
         <button class="btn-primary" onclick="addOperator()">Adicionar à Lista +</button>
       </div>
       <label class="lbl">Lista de Operadores</label>
@@ -288,11 +303,40 @@ const K_OPS     = "nps_ops_v8";
 const K_DATA    = "nps_data_v8";
 const K_UPDATED = "nps_updated_v8";
 
-const OPERATORS = [
-  "Liz","Natália","Carolina","Alef","Davi","Daniele",
-  "Michele","Sunamita","Blenda","Fernanda","Lucas",
-  "Eduarda","Kaio","Patrícia"
-];
+const K_OPS     = "nps_ops_v8";
+const K_DATA    = "nps_data_v8";
+const K_UPDATED = "nps_updated_v8";
+
+  // ===== BANCO DE DADOS DOS CAIXAS =====
+const ID_DATABASE = {
+"0001":"Lucas","0002":"Eliane","0003":"Pedro Henrique","0004":"Kaio","0005":"Antonio",
+"0006":"Claudinara","0007":"Daniele","0008":"Michele","0009":"Mariana","0010":"Davi",
+"0011":"Cledir","0012":"Liz","0013":"Carolina","0014":"Elienilde","0015":"Fagner",
+"0016":"Blenda","0017":"Eduarda","0018":"Ana Luisa","0019":"Cristina","0020":"Elisangela",
+"0021":"Fernanda Emil","0022":"Eduarda da M","0023":"Lucifabio","0024":"Ana Paula","0025":"Pedro Ferreira",
+"0026":"Jucilene","0027":"Ester","0028":"Ayslan","0029":"Marilene","0030":"Taciane",
+"0031":"Barbara","0032":"Andreia","0033":"Elisabete","0034":"Nayane","0035":"Calita",
+"0036":"Daiane","0037":"Irlane","0038":"Vanessa","0039":"Janildo","0040":"Tayná",
+"0041":"Alef","0042":"Fernanda O","0043":"Leila","0044":"Ana Paula","0045":"Poliana",
+"0046":"Natália","0047":"Izabella","0048":"Camila","0049":"Sunamita",
+"0051":"Fernanda","0052":"Tatiana","0053":"Rafaella","0054":"Thais",
+"0057":"Creusa","0065":"Patrícia","0067":"Erika","0073":"Rafael Reinan",
+"0075":"Elinaldo","0082":"Fernanda Fari",
+"0085":"Mirllem","0094":"Danyella","0095":"Marilia","0098":"Glaucia",
+"0105":"Rafael Manoel","0109":"Leonardo","0111":"Eder","0112":"Fabio",
+"0114":"Nathalia","0116":"Valdilene","0117":"Vanessa",
+"0123":"Cicera","0133":"Lara","0135":"Sandra","0136":"Sara Safira"
+};
+
+function autoFillOperator() {
+  const id = document.getElementById('search-id')?.value.trim();
+  if (!id) return;
+
+  const name = ID_DATABASE[id];
+  if (name) {
+    document.getElementById('select-op').value = name;
+  }
+}
 
 // Pontos de março pré-carregados como lançamentos reais
 // Cada ponto = 1 avaliação com nota 10 na data 2026-03-26
